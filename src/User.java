@@ -4,11 +4,11 @@
  * CIS 22C, Final Project
  */
 
- public class User {
-    protected String firstName;
-    protected String lastName;
-    protected String email;  
-    protected String password;
+public class User {
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
