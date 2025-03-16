@@ -1,3 +1,9 @@
+/**
+  * User.java
+  * @author Joshua Darlucio
+  * CIS 22C, Final Project
+  */
+
 public class User {
     private String firstName;
     private String lastName;
