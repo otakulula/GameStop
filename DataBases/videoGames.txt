@@ -7,7 +7,7 @@ Horror
 
 Elden Ring
 59.99
-An expansive open-world action RPG where players explore a dark, mysterious realm filled with challenging foes and deep lore.
+An expansive open-world action RPG where players explore a mysterious realm filled with challenging foes.
 1
 18+
 Action
@@ -35,28 +35,28 @@ Action
 
 Rust
 39.99
-A multiplayer survival game where players scavenge for resources, build bases, and contend with both the environment and other survivors.
+A multiplayer survival game where players scavenge for resources and build bases.
 6
 13+
 Survival
 
 Eternal Return
 Free
-A unique battle royale survival game that blends MOBA and crafting elements, challenging players to outlast each other on a mysterious island.
+A unique battle royale survival game that blends MOBA and crafting elements on a mysterious island.
 5
 13+
 Anime
 
 Silent Hill
 69.99
-A survival horror game series that plunges players into a fog-shrouded town filled with supernatural mysteries and psychological terror.
+A survival horror game series in a fog-shrouded town with supernatural mysteries.
 6
 13+
 Horror
 
 For the Kind
 24.99
-A turn-based roguelike strategy RPG where players embark on epic quests in a challenging, unpredictable fantasy world.
+A turn-based roguelike strategy RPG in a challenging, unpredictable fantasy world.
 11
 13+
 Strategy
@@ -70,35 +70,35 @@ Adventure
 
 War Thunder
 Free
-A realistic military MMO offering immersive battles across air, land, and sea with detailed, historically accurate vehicles.
+A realistic military MMO offering immersive battles across air, land, and sea.
 7
 13+
 Simulation
 
 FC 24
 69.99
-A modern football simulation game that delivers dynamic gameplay, updated rosters, and immersive career modes.
+A modern football simulation game that delivers dynamic gameplay and immersive career modes.
 5
 13+
 Simulation
 
 Ticket to Ride 
 14.99
-A digital board game adaptation where players collect cards to build train routes and connect cities across a map.
+A digital board game where players collect cards to build train routes and connect cities across a map.
 7
 13+
 Board Game 
 
 Desert Stalker
 17.99
-A stealth-action game where you navigate perilous desert landscapes, using strategy and skill to overcome dangerous foes.
+A stealth-action game where you navigate perilous desert landscapes and overcome dangerous foes.
 4
 18+
 Strategy
 
 God of War Ragnarok
 59.99
-An epic action-adventure game that follows Kratos and Atreus on a perilous journey through Norse mythology, delivering intense combat and immersive storytelling.
+An epic action game that follows Kratos and Atreus on a perilous journey through Norse mythology.
 8
 13+
 Action
