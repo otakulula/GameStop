@@ -2,6 +2,7 @@ John Smith
 perryPrinkle@yahoo.com
 butterfly72ocean 
 28.89
+4
 Resident Evil 4
 Elden Ring
 God of War Ragnarok
@@ -11,6 +12,7 @@ Maria Rodriguez
 blueLighting@outlook.com
 volcano25guitar 
 506.56
+2
 The Last of Us
 Counter-Strike 2
 
@@ -18,6 +20,7 @@ David Chen
 britishPlane@gmail.com
 rocket39diamond
 0
+3
 Wartales
 Rust
 Silent Hill
@@ -26,15 +29,18 @@ Sarah Johnson
 amazinglyTerrible@icloud.com
 sunset46planet 
 215.67
+0
 
 Robert Williams
 jeepBoost@mail.com
 meadow91forest 
 69.42
+2
 For the Kind
 Desert Stalker
 
 Willam Dawson
 moonShine@hotmail.com
 red62purple 
+0
 0
