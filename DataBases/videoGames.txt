@@ -29,7 +29,7 @@ Strategy
 Counter-Strike 2
 Free
 A tactical shooter that refines the classic bomb defusal experience.
-Unlimited
+3
 13+
 Action
 
@@ -43,7 +43,7 @@ Survival
 Eternal Return
 Free
 A unique battle royale survival game that blends MOBA and crafting elements, challenging players to outlast each other on a mysterious island.
-Unlimited
+5
 13+
 Anime
 
@@ -71,7 +71,7 @@ Adventure
 War Thunder
 Free
 A realistic military MMO offering immersive battles across air, land, and sea with detailed, historically accurate vehicles.
-Unlimited
+7
 13+
 Simulation
 
