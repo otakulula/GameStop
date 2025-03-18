@@ -1,6 +1,6 @@
 John Smith
 perryPrinkle@yahoo.com
-butterfly72ocean 
+butterfly72ocean
 28.89
 4
 Resident Evil 4
@@ -10,7 +10,7 @@ Counter-Strike 2
 
 Maria Rodriguez
 blueLighting@outlook.com
-volcano25guitar 
+volcano25guitar
 506.56
 2
 The Last of Us
@@ -27,13 +27,13 @@ Silent Hill
 
 Sarah Johnson
 amazinglyTerrible@icloud.com
-sunset46planet 
+sunset46planet
 215.67
 0
 
 Robert Williams
 jeepBoost@mail.com
-meadow91forest 
+meadow91forest
 69.42
 2
 For the Kind
@@ -41,6 +41,6 @@ Desert Stalker
 
 Willam Dawson
 moonShine@hotmail.com
-red62purple 
+red62purple
 0
 0
