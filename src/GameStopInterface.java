@@ -70,6 +70,10 @@ public class GameStopInterface {
     }
 
 
+
+
+
+
     public static void fillCustomers( File file, HashTable<Customer> cuHashTable){//another param to add game into cust list
         try {
             Scanner input = new Scanner(file);
@@ -79,11 +83,13 @@ public class GameStopInterface {
                 String password = input.next();
                 double cashBalance = input.nextDouble();
                 int numOfGames = input.nextInt();
+                if(input.hasNextLine()){
+                    input.nextLine();
+                }
                 //here create a video game arraylist that holds all games cust owns
                 for (int i = 0; i < numOfGames; i++) {
                     String gameName = input.nextLine();
                     // create a videogame object using gameName and add it to videogame arraylist;
-                    input.nextLine();
                 }
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
@@ -109,11 +115,15 @@ public class GameStopInterface {
                 String password = input.next();
                 int empID = input.nextInt();
                 boolean isManager = input.nextBoolean();
-               
+            
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
                 String lastName = name.substring(spaceLoc + 1);
-               // empHashTable.add(new Employee()); create and add all things into emp object and push into hashtable
+                // empHashTable.add(new Employee()); create and add all things into emp object and push into hashtable
+                if(input.hasNextLine()){
+                    input.nextLine();
+                    input.nextLine();
+                }
             }
             input.close();
         } catch (FileNotFoundException e) {
@@ -127,14 +137,29 @@ public class GameStopInterface {
             Scanner input = new Scanner(file);
             while (input.hasNextLine()) {
                 String name = input.nextLine();
-                Double price = input.nextDouble();
+                String priceInText = input.next();
+                double price = 0;
+                if(!(priceInText.equals("Free"))){
+                    price = Double.parseDouble(priceInText);
+                }
+                input.nextLine();
                 String gameDes = input.nextLine();
                 int stock = input.nextInt();
                 String ageRating = input.next();
+                int ageLimit = 0;
+                if(ageRating.contains("+")){
+                    int plusIndex = ageRating.indexOf("+");
+                    ageLimit = Integer.parseInt(ageRating.substring(0, plusIndex));
+                } else {
+                    ageLimit = Integer.parseInt(ageRating);
+                }
                 String genre = input.next();
                
-                // do smth to save agerating as num since like using substring, since age ratings is like num with +
-               // gameHashtalbe -- create videogame object then add into hashtable
+                // gameHashtalbe -- create videogame object then add into hashtable
+                if(input.hasNextLine()){
+                    input.nextLine();
+                    input.nextLine();
+                }
             }
             input.close();
         } catch (FileNotFoundException e) {
@@ -142,7 +167,4 @@ public class GameStopInterface {
             e.printStackTrace();
         } 
     }
-
-
-
 }
