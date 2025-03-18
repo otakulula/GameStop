@@ -51,23 +51,22 @@ public class GameStopInterface {
         final int NUM_CUSTOMERS = 100;
         final int NUM_EMPLOYEE = 4;
         final int NUM_VIDEO_GAMES = 50;
+        
 
-        File custFile = new File("DataBases/customers.txt");
-        File empFile = new File("DataBases/employees.txt");
-        File vgFile = new File("DataBases/videoGames.txt");
+        File custFile = new File("../DataBases/customers.txt");
+        File empFile = new File("../DataBases/employees.txt");
+        File vgFile = new File("../DataBases/videoGames.txt");
 
         HashTable<Customer> cuHashTable = new HashTable<>(NUM_CUSTOMERS);
         HashTable<Employee> empHashTable = new HashTable<>(NUM_EMPLOYEE * 3);
      // HashTable<VideoGames> gamesHashTable = new HashTable<>(NUM_VIDEO_GAMES);
 
-        // method to fill video games into ... 
+        fillVideoGames(vgFile); // one more param gameHashTable to fill it up
         fillCustomers(custFile, cuHashTable); // one more param (gamesHashTables)
         fillEmployee(empFile, empHashTable);
-       
 
         Scanner obj = new Scanner(System.in);
         System.out.println("Welcome to Game Stop!");
-       
     }
 
 
@@ -123,6 +122,26 @@ public class GameStopInterface {
         } 
     }
 
+    public static void fillVideoGames (File file){ // one more param --> hashtable of vidoe game to fill
+        try {
+            Scanner input = new Scanner(file);
+            while (input.hasNextLine()) {
+                String name = input.nextLine();
+                Double price = input.nextDouble();
+                String gameDes = input.nextLine();
+                int stock = input.nextInt();
+                String ageRating = input.next();
+                String genre = input.next();
+               
+                // do smth to save agerating as num since like using substring, since age ratings is like num with +
+               // gameHashtalbe -- create videogame object then add into hashtable
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        } 
+    }
 
 
 
