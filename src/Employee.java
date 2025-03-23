@@ -10,7 +10,9 @@ import DataStructures.BST;
 import DataStructures.LinkedList;
 import DataStructures.Heap;
 import DataStructures.HashTable;
- 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class Employee extends User{
 
     private boolean isManager;
@@ -37,6 +39,13 @@ public class Employee extends User{
         this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
         this.customers = customers;
+    }
+
+    private static class OrderPriorityComparator implements Comparator<Order> {
+        @Override
+        public int compare(Order order1, Order order2) {
+            return Integer.compare(order2.getPriority(), order1.getPriority()); // Max-heap based on priority (highest first)
+        }
     }
 
     /**
@@ -120,7 +129,20 @@ public class Employee extends User{
      * View all orders (heap sort?)
      */
     public void viewAllOrders() {
-        
+        ArrayList<Order> ordersArrayList = new ArrayList<>();
+        unshippedOrders.positionIterator();
+        while (!unshippedOrders.offEnd()) {
+            Order order = unshippedOrders.getIterator();
+            ordersArrayList.add(order);
+            unshippedOrders.advanceIterator();
+        }
+        Heap<Order> heap = new Heap<>(ordersArrayList, new OrderPriorityComparator());
+
+        ArrayList<Order> sortedOrders = heap.sort();
+
+        for (int i = 0; i < sortedOrders.size(); i++) {
+            System.out.println(sortedOrders.get(i)); 
+        }
     }
 
 
