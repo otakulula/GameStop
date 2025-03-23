@@ -19,9 +19,9 @@ public class Employee extends User{
     private LinkedList<Order> unshippedOrders;
     private LinkedList<Order> shippedOrders;
     private BST<VideoGame> gameCatalog;
+    //private HashTable<VideoGame> gameCatalog;
     private HashTable<Customer> customers;
     
- 
 
     /**
      * Constructs an Employee object with the given details.
@@ -32,28 +32,58 @@ public class Employee extends User{
      * @param password The password for the employee.
      * @param isManager Indicates if the employee is a manager.
      */
-    public Employee(String firstName, String lastName, String username, String password, boolean isManager, HashTable<Customer> customers) {
-        super(firstName, lastName, username, password);
+    public Employee(String firstName, String lastName, String email, String password, boolean isManager, HashTable<Customer> customers) {
+        super(firstName, lastName, email, password);
         this.isManager = isManager;
         this.unshippedOrders = new LinkedList<>();
         this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
+        //this.gameCatalog = new HashTable<>(10);
         this.customers = customers;
     }
+     /**
+      * Employee constructor only email and password
+      * @param email employee email
+      * @param password employee password
+      */
 
+    public Employee(String email, String password){
+        super("", "", email, password);
+        this.isManager = false;        
+        this.unshippedOrders = new LinkedList<>();
+        this.shippedOrders = new LinkedList<>();
+        this.gameCatalog = new BST<>();
+        //this.gameCatalog = new HashTable<>(10);
+        this.customers = new HashTable<>(10); 
+    }
+
+    /**
+     * comparator for order priority
+     */
     private static class OrderPriorityComparator implements Comparator<Order> {
         @Override
         public int compare(Order order1, Order order2) {
-            return Integer.compare(order2.getPriority(), order1.getPriority()); // Max-heap based on priority (highest first)
+            return Integer.compare(order2.getPriority(), order1.getPriority()); 
         }
     }
+
+/**
+ * comparator for video game titles
+ */
+    public class VideoGameComparator implements Comparator<VideoGame> {
+        @Override
+        public int compare(VideoGame game1, VideoGame game2) {
+            return game1.getTitle().compareTo(game2.getTitle());
+        }
+    }
+
 
     /**
      * Retrieves whether the employee is a manager.
      * 
      * @return true if the employee is a manager, false otherwise.
      */
-    public boolean getManager() {
+    public boolean isManager() {
         return isManager;
     }
     
@@ -126,7 +156,7 @@ public class Employee extends User{
     }
 
     /**
-     * View all orders (heap sort?)
+     * Prints all the orders
      */
     public void viewAllOrders() {
         ArrayList<Order> ordersArrayList = new ArrayList<>();
@@ -144,8 +174,92 @@ public class Employee extends User{
             System.out.println(sortedOrders.get(i)); 
         }
     }
+    /**
+     * ships an order out 
+     * @param orderID the order to be shipped
+     */
+    public void shipOrder(int orderID) {
+        Order orderToShip = searchOrderById(orderID);
+        if (orderToShip != null) {
+            while(!unshippedOrders.offEnd()){
+                unshippedOrders.positionIterator();
+                if(unshippedOrders.getIterator().getOrderID() == orderID){
+                    unshippedOrders.removeIterator();
+                }
+                else{
+                    unshippedOrders.advanceIterator();
+                }
+            }
+            shippedOrders.addLast(orderToShip);
+            System.out.println("Order " + orderID + " has been shipped.");
+        } 
+        else {
+            System.out.println("Order not found.");
+        }
+    }
+    /**
+     * writes all the shipped orders to a file
+     * @param filename name of the file to write to
+     */
+    public void writeToFile(String filename) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
+            shippedOrders.positionIterator();
+            while (!shippedOrders.offEnd()) {
+                pw.println(shippedOrders.getIterator().toString());
+                shippedOrders.advanceIterator();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing to " + filename);
+        }
+    }
 
+    /**
+     *  not finished
+     * @param gameTitle title of the game
+     * @param newPrice new price to be set
+     * @param newDescription new description
+     * @param additionalStock the stock to add
+     */
 
+    public void updateGameByKey(String gameTitle, double newPrice, String newDescription, int additionalStock) {
+        if(this.isManager()){
+
+            int key = gameCatalog.hash(gameTitle);
+
+            VideoGame game = gameCatalog.get(key);
+            
+            if (game != null) {
+                game.setPrice(newPrice);
+                game.setDescription(newDescription);
+                game.setStock(game.getStock() + additionalStock);
+
+            } 
+            else {
+            System.out.println("Game not found.");
+            }
+        }
+        
+        
+    }
+
+/**
+ * adds new game
+ * @param newGame new game to be added
+ */
+    public void addNewGame(VideoGame newGame) {
+        if(this.isManager()){
+            gameCatalog.insert(newGame, new VideoGameComparator());
+        }
+    }
+/**
+ * removes a game
+ * @param gameTitle
+ */
+    public void removeGame(String gameTitle) {
+        if(this.isManager()){
+            gameCatalog.remove(new VideoGame(gameTitle), new VideoGameComparator());
+        }
+    }
  
 
 }
