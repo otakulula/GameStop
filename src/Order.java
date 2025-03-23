@@ -30,64 +30,219 @@ public class Order {
 	 * shipping speed selected by the customer
 	 * */
 	
-	//basic establishment for now, more details to come
-	public Order (int orderID, Customer customer, String date, LinkedList<VideoGame> orderContents, int shippingSpeed, int priority){
+	/**CONSTRUCTORS */
+
+    /**
+     * Full-argument constructor for Order
+     * @param orderID the id of the order
+     * @param customer the customer which made the order
+     * @param date the date the order was made
+     * @param orderContents a linked list containing the video games in the order
+     * @param shippingSpeed the speed of shipping for the order
+     * @param priority the priority of the order
+     */
+	public Order (int orderID, Customer customer, String date, LinkedList<VideoGame> orderContents, int shippingSpeed){
 		this.orderID = orderID;
 		this.customer = customer;
 		this.date = date;
 		this.orderContents = orderContents;
 		this.shippingSpeed = shippingSpeed;
-		this.priority = priority;
+		
+		//priority neeeds ot be calculated
+		
+		//this.priority = priority;
 		
 	}
 	
+	//piroority 1, 2, or 3 based on priority
+	// if multiple priority 1s then its ordered based off of data
+	//comparators
+	
+	//priority is calculated based off of shipping data
+	//if i consider month as hundreds
+	//and if i consider day tens
+	
+    /**ACCESSORS */
+
+    /**
+     * Accesses the order ID
+     * @return the order ID
+     */
 	public int getOrderID() {
 		return orderID;
 	}
 	
-	// is this necessary/wanted
+	/**
+     * Accesses the customer who made the order
+     * @return the customer who made the order
+     */
 	public Customer getCustomer() {
 		return customer;
 	}
 	
+	/**
+     * Accesses the date the order was made
+     * @return the customer who made the order
+     */
 	public String getDate() {
 		return date;
 	}
 	
+	/**
+     * Accesses the content of the order
+     * @return the content of the order
+     */
 	public LinkedList<VideoGame> ordercontent() {
 		return orderContents;
 	}
 	
+	/**
+     * Accesses the shipping speed of the order
+     * @return the shipping speed of the order
+     */
 	public int getShippingSpeed() {
 		return shippingSpeed;
 	}
 	
+	/**
+     * Accesses the priority of the order
+     * @return the priority of the order
+     */
 	public int getPriority() {
 		return priority;
 	}
-	
+
+    /**MUTATORS */
+
+    /**
+     * Sets the id of the order
+     * @param orderID the id of the order
+     */
 	public void setOrderID(int orderID) {
 		this.orderID = orderID;
 	}
 	
+	/**
+     * Sets the customer of the order
+     * @param customer the customer of the order
+     */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
 	
+	/**
+     * Sets the date of the order
+     * @param date the date of the order
+     */
 	public void setDate(String date) {
 		this.date = date;
 	}
 	
+	/**
+     * Sets the content of the order
+     * @param orderContents the content of the order
+     */
 	public void setOrderContent(LinkedList<VideoGame> orderContents) {
 		this.orderContents = orderContents;
 	}
 	
+	/**
+     * Sets shipping speed of the order
+     * @param shippingSpeed the speed of shipping for the order
+     */
 	public void setShippingSpeed(int shippingSpeed) {
 		this.shippingSpeed = shippingSpeed;
 	}
 	
+	/**
+     * Sets the priority of the order
+     * @param priority the priority of the order
+     */
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+	
+	/**ADDITIONAL METHODS */
+	
+	/**
+     * Turns the order date into an integer
+     * @returns the order date as an integer
+     */
+	public int calculateDate() {
+		//Date Format: "Month, day" Ex. March, 6 ; Ex. August, 21
+		
+		//space find space should be user friendly
+		//wb if user puts 0 in front of date like 06
+		//and toLowerCase
+		int date = 0;
+		int monthEndIndex = -1;
+		int dayStartIndex = -1;
+		for(int i = 0; i < this.date.length(); i++) {
+			if(Character.isLetter(this.date.charAt(i))) {
+				monthEndIndex = i;
+			}
+			if(Character.isDigit(this.date.charAt(i))) {
+				dayStartIndex = i;
+				i = this.date.length() + 1;
+			}
+		}
+		String month = this.date.substring(0, monthEndIndex + 1).toLowerCase();
+		String day = this.date.substring(dayStartIndex);
+		
+		if(month.equals("january")) {
+			date += 100;
+		} else if(month.equals("february")) {
+			date += 200;
+		} else if(month.equals("march")) {
+			date += 300;
+		} else if(month.equals("april")) {
+			date += 400;
+		} else if(month.equals("may")) {
+			date += 500;
+		} else if(month.equals("june")) {
+			date += 600;
+		} else if(month.equals("july")) {
+			date += 700;
+		} else if(month.equals("august")) {
+			date += 800;
+		} else if(month.equals("september")) {
+			date += 900;
+		} else if(month.equals("october")) {
+			date += 1000;
+		} else if(month.equals("november")) {
+			date += 1100;
+		} else if(month.equals("december")) {
+			date += 1200;
+		}
+		
+		int dayNum = Integer.parseInt(day);
+		day += dayNum;
+		
+		return dayNum;
+	}
+	
+	/**
+	 * Calculates the priority of the order based off of shipping speed and the date the
+	 * order was placed
+	 * @returns an integer representing the priority of the order
+	 * */
+	public int calculatePriority() {
+		//Shipping overnight order : 3 == 30000
+		//Shipping rush order: 2 = 20000
+		//Shipping reg : 1 = 10000 
+		
+		int priority = 0;
+		int date = calculateDate();
+		if(shippingSpeed == 3) {
+			priority += 30000;
+		} else if(shippingSpeed == 2) {
+			priority += 20000;
+		} else if(shippingSpeed == 1) {
+			priority += 10000;
+		}
+		
+		priority += date;
+		return priority;
 	}
 	
 	/**
