@@ -4,6 +4,10 @@
  * CIS 22C
  */
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 public class VideoGame{
     private String title;
     private double price;
@@ -169,6 +173,7 @@ public class VideoGame{
      * Returns a string representation of the video game.
      * @return the string representation of the video game
      */
+    @Override
     public String toString(){
         return title + "\nPrice: $" + price + "\nDescription: " + description + "\nStock: " 
         + stock + "\nAge Rating: " + ageRating + "\nGenre: " + genre;
@@ -187,5 +192,28 @@ public class VideoGame{
             sum += (int)title.charAt(i);
         }
         return sum;
+    }
+
+    /**
+     * Converts the VideoGame object to a string for writing to a file
+     */
+    public String toFileString(){
+        return title + "\n" + price + "\n" + description + "\n" + stock + "\n" + ageRating + "\n" + genre + "\n";
+    }
+
+    /**
+     * Writes the VideoGame object to a file
+     * @param filename the name of the file
+     */
+    public void writeToFile(String fileName){
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(fileName, true));
+            writer.println(this.toFileString().trim());
+            writer.println(); 
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing game to file: " + fileName);
+            e.printStackTrace();
+        }
     }
 }
