@@ -16,10 +16,6 @@ public class Order {
 	private int shippingSpeed; // or use enums
 	private int priority;
 	
-	// put heap in customer class??
-	private Heap heap;
-	
-	
 	/*
 	 * getters, setters, constructors go here
 	 * 
@@ -33,12 +29,12 @@ public class Order {
 	 * */
 	
 	//basic establishment for now, more details to come
-	public Order (int ID, Customer cus, String date, LinkedList<VideoGame> games, int speed, int priority){
-		orderID = ID;
-		customer = cus;
+	public Order (int orderID, Customer customer, String date, LinkedList<VideoGame> orderContents, int shippingSpeed, int priority){
+		this.orderID = orderID;
+		this.customer = customer;
 		this.date = date;
-		orderContents = games;
-		shippingSpeed = speed;
+		this.orderContents = orderContents;
+		this.shippingSpeed = shippingSpeed;
 		this.priority = priority;
 		
 	}
@@ -67,7 +63,31 @@ public class Order {
 	public int getPriority() {
 		return priority;
 	}
-	// do you want ability to inittially add in linked list to make up order?
-//method to add videoGames to order ()
-  
+	
+	public void setOrderID(int orderID) {
+		this.orderID = orderID;
+	}
+	
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+	
+	//setters
+	
+	public String toString(){
+		String str = "";
+		str += "Order ID: " + orderID + "\nCustomer: " + customer.getFirstName() + " " + customer.getLastName();
+		str += "\nDate: " + date + "\nShipping Speed: " + shippingSpeed + "\nPriority: " + priority + "\nOrder Content:\n";
+		
+		orderContents.positionIterator();
+		for(int i = 0; i < orderContents.getLength(); i++) {
+			str += i + ". " + orderContents.getIterator() + "\n";
+			orderContents.advanceIterator();
+		}
+		return str;
+    }
 }
