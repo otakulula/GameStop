@@ -174,4 +174,18 @@ public class VideoGame{
         + stock + "\nAge Rating: " + ageRating + "\nGenre: " + genre;
     }
 
+    /**
+     * Returns a consistent hash code for each VideoGame 
+     * by summing the Unicode values of each character in the key
+     * Key = title
+     * @return the hash code
+     */
+    @Override
+    public int hashCode(){
+        int sum = 0;
+        for(int i = 0; i < title.length(); i++){
+            sum += (int)title.charAt(i);
+        }
+        return sum;
+    }
 }
