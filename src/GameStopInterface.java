@@ -80,15 +80,29 @@ public class GameStopInterface {
             performOption(obj, isAccReal);
         } else {
             System.out.print("\nWe don't have your account on file...\n\n" +
-            "Let's create an account for you!\n");
-            System.out.print("Enter your first name: ");
-            String firstName = obj.next();
-            System.out.print("Enter your last name: ");
-            String lastName = obj.next();
-            User newCus = new Customer(firstName, lastName, email, password);
-            System.out.println();
-            System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
-            performOption(obj, newCus);
+            "To remain as Guest type 1 or To create an account type 2: ");
+            int answer = obj.nextInt();
+
+            while (answer != 1 && answer != 2 ){ 
+                System.out.print("\nInvalid answer\n" + "Enter 1 for Guest or 2 to create account: ");
+                answer = obj.nextInt();
+            }
+
+            if( answer == 1){
+              //  User guest = new Customer(email, password, true);
+              System.out.println();
+              System.out.print("Welcome, Guest user!\n\n\n");
+              //   performOption(obj, guest);
+            } else {
+                System.out.print("Enter your first name: ");
+                String firstName = obj.next();
+                System.out.print("Enter your last name: ");
+                String lastName = obj.next();
+              //  User newCus = new Customer(firstName, lastName, email, password, false);
+                System.out.println();
+             //   System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
+             //   performOption(obj, newCus);
+            }
         }
     }
 
@@ -102,7 +116,7 @@ public class GameStopInterface {
         String choice = options(obj, user);
         String c = choice.toUpperCase();
         
-      if( user instanceof Customer) {
+      if( user instanceof Customer) { // for each method, have a check to check for guest and limit their use
           if(c.equals("A")){
            // customer's option A
         } else if (c.equals("B")){
@@ -116,7 +130,7 @@ public class GameStopInterface {
         } else {
             invalidChoice(obj, user);
         }
-        } else if( user instanceof Employee) { // and check manager status isAccReal.isManger == true
+     } else if( user instanceof Employee) { // and check manager status isAccReal.isManger == true
             if(c.equals("A")){
                 // manager's option A
             } else if (c.equals("B")){
@@ -132,7 +146,7 @@ public class GameStopInterface {
             } else{
                 invalidChoice(obj, user);
             }
-       }  else if ( user instanceof Employee){
+    }  else if ( user instanceof Employee){
             if(c.equals("A")){
                 // employee's option A
             } else if (c.equals("B")){
@@ -168,9 +182,9 @@ public class GameStopInterface {
             System.out.print("Please select from the following options:\n\n" +
             "A. Search A Customer's Order\n" +
             "B. View Order With Highest Priority\n" +
-            "C. View All Orders Sorted by Priority\n" +
+            "C. View All Orders Sorted by Priority\n" + // show all customers organzied by priority
             "D. Ship A Customer's Order\n" +
-            "E. Update The Video Game Database" +
+            "E. Update The Video Game Database" + // like add a new game, remove a game, or update game's info
             "X. Exit\n\n" +
             "Enter your choice: ");
         } else if (user instanceof Employee){
