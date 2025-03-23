@@ -90,18 +90,24 @@ public class Order {
 		this.priority = priority;
 	}
 	
-	//setters
-	
+	/**
+     * Returns a string representation of the Order object
+     * @return A string containing the order's information
+     */
+	@Override
 	public String toString(){
-		String str = "";
-		str += "Order ID: " + orderID + "\nCustomer: " + customer.getFirstName() + " " + customer.getLastName();
-		str += "\nDate: " + date + "\nShipping Speed: " + shippingSpeed + "\nPriority: " + priority + "\nOrder Content:\n";
+		StringBuilder str = new StringBuilder();
+		
+		str.append("Order ID: ").append(orderID).append("\nCustomer: ");
+		str.append(customer.getFirstName()).append(" ").append(customer.getLastName());
+		str.append("\nDate: ").append(date).append("\nShipping Speed: ").append(shippingSpeed);
+		str.append("\nPriority: ").append(priority).append("\nOrder Content:\n");
 		
 		orderContents.positionIterator();
 		for(int i = 0; i < orderContents.getLength(); i++) {
-			str += i + ". " + orderContents.getIterator() + "\n";
+			str.append(i).append(". ").append(orderContents.getIterator().getTitle()).append("\n");
 			orderContents.advanceIterator();
 		}
-		return str;
+		return str.toString();
     }
 }
