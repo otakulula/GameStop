@@ -120,19 +120,7 @@ public class Employee extends User{
      * View all orders (heap sort?)
      */
     public void viewAllOrders() {
-        Heap<Order> orderHeap = new Heap<>();
-    
-        unshippedOrders.positionIterator();
-        while (!unshippedOrders.offEnd()) {
-            orderHeap.add(unshippedOrders.getIterator());
-            unshippedOrders.advanceIterator();
-        }
-
-`
-    while (!orderHeap.isEmpty()) {
-        Order order = orderHeap.remove();  // Removes the highest priority order
-        System.out.println("Order ID: " + order.getOrderID() + ", Priority: " + order.getPriority());
-    }
+        
     }
 
 
