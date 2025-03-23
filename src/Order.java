@@ -16,6 +16,8 @@ public class Order {
 	private int shippingSpeed; // or use enums
 	private int priority;
 	
+	
+	
 	/*
 	 * getters, setters, constructors go here
 	 * 
@@ -52,7 +54,7 @@ public class Order {
 		return date;
 	}
 	
-	public LinkedList ordercontent() {
+	public LinkedList<VideoGame> ordercontent() {
 		return orderContents;
 	}
 	
@@ -70,6 +72,18 @@ public class Order {
 	
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+	
+	public void setDate(String date) {
+		this.date = date;
+	}
+	
+	public void setOrderContent(LinkedList<VideoGame> orderContents) {
+		this.orderContents = orderContents;
+	}
+	
+	public void setShippingSpeed(int shippingSpeed) {
+		this.shippingSpeed = shippingSpeed;
 	}
 	
 	public void setPriority(int priority) {
