@@ -1,6 +1,7 @@
 import DataStructures.HashTable;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
 
@@ -56,12 +57,13 @@ public class GameStopInterface {
 
         HashTable<Customer> cuHashTable = new HashTable<>(NUM_CUSTOMERS);
         HashTable<Employee> empHashTable = new HashTable<>(NUM_EMPLOYEE * 3);
-     // HashTable<VideoGames> gamesHashTable = new HashTable<>(NUM_VIDEO_GAMES);
+        HashTable<VideoGame> gamesHashTable = new HashTable<>(NUM_VIDEO_GAMES);
 
-        fillVideoGames(vgFile); // one more param gameHashTable to fill it up
-        fillCustomers(custFile, cuHashTable); // one more param (gamesHashTables)
-        fillEmployee(empFile, empHashTable);
+        fillVideoGames(vgFile ,gamesHashTable);
+        fillCustomers(custFile, cuHashTable, gamesHashTable);
+       //fillEmployee(empFile, empHashTable);gm
 
+       
         Scanner obj = new Scanner(System.in);
         System.out.println("Welcome to Game Stop!");
         System.out.print("Please enter your email address: ");
@@ -70,11 +72,10 @@ public class GameStopInterface {
         String password = obj.next();
         User isAccReal = doesAccountExist(email, password, cuHashTable, empHashTable);
 
-       // if(isAccReal instanceof Customer  ){
-       //   System.out.print("\nWelcome, " + isAccReal.getFirstName() + " " + isAccReal.getLastName() + "!\n\n\n");
+        if(isAccReal instanceof Customer){
+            System.out.print("\nWelcome, " + isAccReal.getFirstName() + " " + isAccReal.getLastName() + "!\n\n\n");
             performOption(obj, isAccReal);
-     //   } else
-        if ( isAccReal instanceof Employee) {
+        } else if ( isAccReal instanceof Employee) {
             System.out.print("\nWelcome, " + isAccReal.getFirstName() + " " + isAccReal.getLastName() + "!\n\n\n");
             performOption(obj, isAccReal);
         } else {
@@ -84,10 +85,10 @@ public class GameStopInterface {
             String firstName = obj.next();
             System.out.print("Enter your last name: ");
             String lastName = obj.next();
-            //User newCus = new Customer(firstName, lastName, email, password);
+            User newCus = new Customer(firstName, lastName, email, password);
             System.out.println();
-            //System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
-            //performOption(obj, newCus);
+            System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
+            performOption(obj, newCus);
         }
     }
 
@@ -101,7 +102,7 @@ public class GameStopInterface {
         String choice = options(obj, user);
         String c = choice.toUpperCase();
         
-     //   if( user instanceof Customer){
+      if( user instanceof Customer) {
           if(c.equals("A")){
            // customer's option A
         } else if (c.equals("B")){
@@ -115,8 +116,7 @@ public class GameStopInterface {
         } else {
             invalidChoice(obj, user);
         }
-       // } else 
-       if( user instanceof Employee) { // and check manager status isAccReal.isManger == true
+        } else if( user instanceof Employee) { // and check manager status isAccReal.isManger == true
             if(c.equals("A")){
                 // manager's option A
             } else if (c.equals("B")){
@@ -151,13 +151,12 @@ public class GameStopInterface {
 
       /**
      * Displays the menu options and returns the user's choice.
-     *
      * @param obj The Scanner object to read user input.
      * @param user The user object that represents the current user
      * @return The user's menu choice as a String.
      */
     public static String options ( Scanner obj, User user){
-      //  if(user instanceof Customer){
+      if(user instanceof Customer){
           System.out.print("Please select from the following options:\n\n" +
                 "A. Search A Video Game\n" +
                 "B. View All Video Games\n" +
@@ -165,8 +164,7 @@ public class GameStopInterface {
                 "D. View Purchased Video Games\n" +
                 "X. Exit\n\n" +
                 "Enter your choice: ");
-    //    } else 
-        if (user instanceof Employee){ // and check manager status isAccReal.isManger == true
+        } else if (user instanceof Employee){ // and check manager status isAccReal.isManger == true
             System.out.print("Please select from the following options:\n\n" +
             "A. Search A Customer's Order\n" +
             "B. View Order With Highest Priority\n" +
@@ -187,26 +185,22 @@ public class GameStopInterface {
         return obj.next();
     }
 
-
-
       /**
      * Displays an error message when an invalid menu option is selected.
-     *
      * @param obj   The Scanner object to read user input.
      * @param user   The User object representing the current user.
      */
-    public static void invalidChoice(Scanner obj, User user) { // more param to come..obj.
-      //  if( user instanceof Customer){
+    public static void invalidChoice(Scanner obj, User user) { // more param to come...
+       if( user instanceof Customer){
             System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
             performOption(obj, user);
-      //  } else
-      if( user instanceof Employee){ //and check manager status isAccReal.isManger == true
+       } else if( user instanceof Employee){ //and check manager status isAccReal.isManger == true
         System.out.println("\nInvalid menu option. Please enter A-E or X to exit.\n");
         performOption(obj, user);
       } else if ( user instanceof Employee){
         System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
         performOption(obj, user);
-     }
+        }
     }
 
      /**
@@ -221,7 +215,6 @@ public class GameStopInterface {
 
 /**
      * Checks if a user account exists in the database of customer or employee based on the provided email and password.
-     *
      * @param email     The email address of the user.
      * @param password  The password of the user.
      * @param customers The HashTable containing all customer accounts.
@@ -231,7 +224,7 @@ public class GameStopInterface {
     public static User doesAccountExist(String email, String password, HashTable<Customer> customers, HashTable<Employee> employees) {  
         User user = null;
        // Customer cus = new Customer(email, password);
-      // Employee emp = new Employee( email, password);
+        //Employee emp = new Employee( email, password);
 
     //   if(  customers.get(cus) != null){
        //     user = customers.get(cus);
@@ -242,7 +235,7 @@ public class GameStopInterface {
       return user;
     }
 
-    public static void fillCustomers( File file, HashTable<Customer> cuHashTable){//another param to add game into cust list
+    public static void fillCustomers( File file, HashTable<Customer> cuHashTable, HashTable<VideoGame> vidHashTable){       
         try {
             Scanner input = new Scanner(file);
             while (input.hasNextLine()) {
@@ -254,15 +247,18 @@ public class GameStopInterface {
                 if(input.hasNextLine()){
                     input.nextLine();
                 }
+                ArrayList<VideoGame> vidgameList = new ArrayList<>();
                 //here create a video game arraylist that holds all games cust owns
                 for (int i = 0; i < numOfGames; i++) {
                     String gameName = input.nextLine();
-                    // create a videogame object using gameName and add it to videogame arraylist;
+                    VideoGame videoGame = new VideoGame(gameName);
+                    VideoGame game = vidHashTable.get(videoGame);
+                    vidgameList.add(game);
                 }
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
                 String lastName = name.substring(spaceLoc + 1);
-              //  cuHashTable.add(new Customer()); create and add all things into cust object and push into hashtable
+              //cuHashTable.add(new Customer()); create and add all things into cust object and push into hashtable
                 if(input.hasNextLine()){
                     input.nextLine();
                 }
@@ -300,11 +296,11 @@ public class GameStopInterface {
         } 
     }
 
-    public static void fillVideoGames (File file){ // one more param --> hashtable of vidoe game to fill
+    public static void fillVideoGames (File file, HashTable<VideoGame> vidHashTable){
         try {
             Scanner input = new Scanner(file);
             while (input.hasNextLine()) {
-                String name = input.nextLine();
+                String title = input.nextLine();
                 String priceInText = input.next();
                 double price = 0;
                 if(!(priceInText.equals("Free"))){
@@ -321,9 +317,9 @@ public class GameStopInterface {
                 } else {
                     ageLimit = Integer.parseInt(ageRating);
                 }
+             
                 String genre = input.next();
-               
-                // gameHashtalbe -- create videogame object then add into hashtable
+                vidHashTable.add(new VideoGame(title, price, gameDes, stock, Integer.toString(ageLimit), genre));
                 if(input.hasNextLine()){
                     input.nextLine();
                     input.nextLine();
