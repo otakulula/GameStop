@@ -48,10 +48,7 @@ public class Order {
 		this.orderContents = orderContents;
 		this.shippingSpeed = shippingSpeed;
 		
-		//priority neeeds ot be calculated
-		
-		//this.priority = priority;
-		
+		this.priority = calculatePriority();
 	}
 	
 	//piroority 1, 2, or 3 based on priority
@@ -170,10 +167,6 @@ public class Order {
      */
 	public int calculateDate() {
 		//Date Format: "Month, day" Ex. March, 6 ; Ex. August, 21
-		
-		//space find space should be user friendly
-		//wb if user puts 0 in front of date like 06
-		//and toLowerCase
 		int date = 0;
 		int monthEndIndex = -1;
 		int dayStartIndex = -1;
