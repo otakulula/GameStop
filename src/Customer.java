@@ -44,6 +44,15 @@ public class Customer extends User {
         this.nextOrderID = 1;
         this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
+
+        if (ownedGames != null) {
+            this.ownedGames = new ArrayList<>(ownedGames);
+            // Add each game to both BSTs
+            for (VideoGame game : ownedGames) {
+                gamesByTitle.insert(game, titleComparator);
+                gamesByGenre.insert(game, genreComparator);
+            }
+        }
     }
 
     /**
@@ -62,34 +71,32 @@ public class Customer extends User {
         this.nextOrderID = 1;
         this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
-    }
 
-    /**
-     * Adds a game to the owned games list.
-     * 
-     * @param game The video game to add to owned games.
-     */
+        if (ownedGames != null) {
+            this.ownedGames = new ArrayList<>(ownedGames);
+            // Add each game to both BSTs
+            for (VideoGame game : ownedGames) {
+                gamesByTitle.insert(game, titleComparator);
+                gamesByGenre.insert(game, genreComparator);
+            }
+        }
+    }
+    
+    //Commented out the arraylist functions
+
+    /*
     public void addOwnedGame(VideoGame game) {
         ownedGames.add(game);
     }
 
-    /**
-     * Gets the list of owned games.
-     * 
-     * @return The ArrayList of owned games.
-     */
     public ArrayList<VideoGame> getOwnedGames() {
         return ownedGames;
     }
 
-    /**
-     * Sets the list of owned games.
-     * 
-     * @param games The ArrayList of games to set as owned.
-     */
     public void setOwnedGames(ArrayList<VideoGame> games) {
         this.ownedGames = games;
     }
+    */
 
     /**
      * Gets the cash balance.
