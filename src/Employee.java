@@ -1,8 +1,25 @@
+/**
+  * Employee.java
+  * @author Huey Nguyen
+  * CIS 22C, Final Project
+  */
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import DataStructures.BST;
+import DataStructures.LinkedList;
+import DataStructures.Heap;
+import DataStructures.HashTable;
+ 
 public class Employee extends User{
 
-    private boolean isManager; 
-    private Queue<Order> unshippedOrders;
-    private LinkedList<Order> shippedOrders;  
+    private boolean isManager;
+    private LinkedList<Order> unshippedOrders;
+    private LinkedList<Order> shippedOrders;
+    private BST<VideoGame> gameCatalog;
+    private HashTable<Customer> customers;
+    
+ 
 
     /**
      * Constructs an Employee object with the given details.
@@ -13,11 +30,13 @@ public class Employee extends User{
      * @param password The password for the employee.
      * @param isManager Indicates if the employee is a manager.
      */
-    public Employee(String firstName, String lastName, String username, String password, boolean isManager) {
+    public Employee(String firstName, String lastName, String username, String password, boolean isManager, HashTable<Customer> customers) {
         super(firstName, lastName, username, password);
         this.isManager = isManager;
-        this.unshippedOrders = new Queue<>();
+        this.unshippedOrders = new LinkedList<>();
         this.shippedOrders = new LinkedList<>();
+        this.gameCatalog = new BST<>();
+        this.customers = customers;
     }
 
     /**
@@ -44,17 +63,18 @@ public class Employee extends User{
      * @return order we are searching for
      */
     public Order searchOrderById(int orderID) {
-        Queue<Order> temp = new Queue<>(unshippedOrders);
-        while (!temp.isEmpty()) {
-            Order order = temp.getFront();
-            if (order.getID() == orderId) {
+        unshippedOrders.positionIterator();
+        while(!unshippedOrders.offEnd()){
+            Order order = unshippedOrders.getIterator();
+            if(order.getOrderID() == orderID){
                 return order;
             }
             else{
-                temp.dequeue();
+                unshippedOrders.advanceIterator();
             }
         }
         return null;
+
     }
     /**
      * Search for an order by customer's first and last name.
@@ -64,33 +84,55 @@ public class Employee extends User{
      */
 
     public Order searchOrderByCustomerName(String firstName, String lastName) {
-        Queue<Order> temp = new Queue<>(unshippedOrders);
-        while (temp.isEmpty()) {
-            Order order = temp.getFront();
-            if (order.getCustomer().getFirstName().equals(firstName) &&
-                order.getCustomer().getLastName().equals(lastName)) {
+        unshippedOrders.positionIterator();
+        while (!unshippedOrders.offEnd()) {
+            Order order = unshippedOrders.getIterator();
+            if (this.getFirstName().equalsIgnoreCase(firstName) &&
+                this.getLastName().equalsIgnoreCase(lastName)) {
                 return order;
-            }
-            else{
-                temp.dequeue();
+            } 
+            else {
+                unshippedOrders.advanceIterator();
             }
         }
         return null;
     }
     /**
-     * View the next order in the queue 
-     * @return the next order in the queue
+     * View the next order in the priority 
+     * @return the next order in the priority
      */
 
-    public Order viewHighestPriorityOrder() {
-        return unshippedOrders.getFront();
+    public void viewHighestPriorityOrder() {
+        Order highestPriorityOrder = null;
+        unshippedOrders.positionIterator();
+        while (!unshippedOrders.offEnd()) {
+            Order currentOrder = unshippedOrders.getIterator();
+            if (highestPriorityOrder == null || currentOrder.getPriority() > highestPriorityOrder.getPriority()) {
+                highestPriorityOrder = currentOrder;
+            }
+            unshippedOrders.advanceIterator();
+        }
+        System.out.println(highestPriorityOrder);
+
     }
 
     /**
      * View all orders (heap sort?)
      */
     public void viewAllOrders() {
+        Heap<Order> orderHeap = new Heap<>();
+    
+        unshippedOrders.positionIterator();
+        while (!unshippedOrders.offEnd()) {
+            orderHeap.add(unshippedOrders.getIterator());
+            unshippedOrders.advanceIterator();
+        }
 
+`
+    while (!orderHeap.isEmpty()) {
+        Order order = orderHeap.remove();  // Removes the highest priority order
+        System.out.println("Order ID: " + order.getOrderID() + ", Priority: " + order.getPriority());
+    }
     }
 
 
