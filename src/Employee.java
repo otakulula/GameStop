@@ -19,7 +19,7 @@ public class Employee extends User{
     private LinkedList<Order> unshippedOrders;
     private LinkedList<Order> shippedOrders;
     private BST<VideoGame> gameCatalog;
-    //private HashTable<VideoGame> gameCatalog;
+    private HashTable<VideoGame> gameTable;
     private HashTable<Customer> customers;
     
 
@@ -32,13 +32,13 @@ public class Employee extends User{
      * @param password The password for the employee.
      * @param isManager Indicates if the employee is a manager.
      */
-    public Employee(String firstName, String lastName, String email, String password, boolean isManager, HashTable<Customer> customers) {
+    public Employee(String firstName, String lastName, String email, String password, boolean isManager, HashTable<Customer> customers, HashTable<VideoGame> gameTable) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
         this.unshippedOrders = new LinkedList<>();
         this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
-        //this.gameCatalog = new HashTable<>(10);
+        this.gameTable = gameTable;
         this.customers = customers;
     }
      /**
@@ -53,7 +53,7 @@ public class Employee extends User{
         this.unshippedOrders = new LinkedList<>();
         this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
-        //this.gameCatalog = new HashTable<>(10);
+        this.gameTable = new HashTable<>(10);
         this.customers = new HashTable<>(10); 
     }
 
@@ -223,10 +223,9 @@ public class Employee extends User{
 
     public void updateGameByKey(String gameTitle, double newPrice, String newDescription, int additionalStock) {
         if(this.isManager()){
+            VideoGame searchGame = new VideoGame(gameTitle);
 
-            int key = gameCatalog.hash(gameTitle);
-
-            VideoGame game = gameCatalog.get(key);
+            VideoGame game = gameTable.get(searchGame);
             
             if (game != null) {
                 game.setPrice(newPrice);
