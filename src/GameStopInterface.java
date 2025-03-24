@@ -58,12 +58,14 @@ public class GameStopInterface {
         HashTable<Customer> cuHashTable = new HashTable<>(NUM_CUSTOMERS);
         HashTable<Employee> empHashTable = new HashTable<>(NUM_EMPLOYEE * 3);
         HashTable<VideoGame> gamesHashTable = new HashTable<>(NUM_VIDEO_GAMES);
+        ArrayList<Order> allUnshippedOrders = new ArrayList<>();
 
         fillVideoGames(vgFile ,gamesHashTable);
-        fillCustomers(custFile, cuHashTable, gamesHashTable);
-       //fillEmployee(empFile, empHashTable);gm
+        fillCustomers(custFile, cuHashTable, gamesHashTable, allUnshippedOrders);
+        fillEmployee(empFile, empHashTable, gamesHashTable, cuHashTable, allUnshippedOrders);
 
-       
+        System.out.println(empHashTable);
+
         Scanner obj = new Scanner(System.in);
         System.out.println("Welcome to Game Stop!");
         System.out.print("Please enter your email address: ");
@@ -89,16 +91,16 @@ public class GameStopInterface {
             }
 
             if( answer == 1){
-              //  User guest = new Customer(email, password, true);
+              User guest = new Customer(email, password, true); // or should just use isAccReal and create it?
               System.out.println();
               System.out.print("Welcome, Guest user!\n\n\n");
-              //   performOption(obj, guest);
+              performOption(obj, guest);
             } else {
                 System.out.print("Enter your first name: ");
                 String firstName = obj.next();
                 System.out.print("Enter your last name: ");
                 String lastName = obj.next();
-              //  User newCus = new Customer(firstName, lastName, email, password, false);
+               // User newCus = new Customer(firstName, lastName, email, password, false);  or should just use isAccReal and create it?
                 System.out.println();
              //   System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
              //   performOption(obj, newCus);
@@ -130,7 +132,9 @@ public class GameStopInterface {
         } else {
             invalidChoice(obj, user);
         }
-     } else if( user instanceof Employee) { // and check manager status isAccReal.isManger == true
+     } else if( user instanceof Employee ) { 
+        Employee emp = (Employee) user;
+        if( emp.isManager()){
             if(c.equals("A")){
                 // manager's option A
             } else if (c.equals("B")){
@@ -146,7 +150,7 @@ public class GameStopInterface {
             } else{
                 invalidChoice(obj, user);
             }
-    }  else if ( user instanceof Employee){
+        } else {
             if(c.equals("A")){
                 // employee's option A
             } else if (c.equals("B")){
@@ -160,6 +164,7 @@ public class GameStopInterface {
             } else {
                 invalidChoice(obj, user);
             }
+        }
        }
     }
 
@@ -175,19 +180,21 @@ public class GameStopInterface {
                 "A. Search A Video Game\n" +
                 "B. View All Video Games\n" +
                 "C. Order A Video Game\n" +
-                "D. View Purchased Video Games\n" +
+                "D. View Purchased Video Games\n" + // see both shipped and unshipped
                 "X. Exit\n\n" +
                 "Enter your choice: ");
-        } else if (user instanceof Employee){ // and check manager status isAccReal.isManger == true
-            System.out.print("Please select from the following options:\n\n" +
-            "A. Search A Customer's Order\n" +
-            "B. View Order With Highest Priority\n" +
-            "C. View All Orders Sorted by Priority\n" + // show all customers organzied by priority
-            "D. Ship A Customer's Order\n" +
-            "E. Update The Video Game Database" + // like add a new game, remove a game, or update game's info
-            "X. Exit\n\n" +
-            "Enter your choice: ");
-        } else if (user instanceof Employee){
+        } else if (user instanceof Employee){ 
+            Employee emp = (Employee) user;
+            if ( emp.isManager()){
+                System.out.print("Please select from the following options:\n\n" +
+                "A. Search A Customer's Order\n" +
+                "B. View Order With Highest Priority\n" +
+                "C. View All Orders Sorted by Priority\n" + // show all customers organzied by priority
+                "D. Ship A Customer's Order\n" +
+                "E. Update The Video Game Database" + // like add a new game, remove a game, or update game's info
+                "X. Exit\n\n" +
+                "Enter your choice: ");
+            } else {
             System.out.print("Please select from the following options:\n\n" +
             "A. Search A Customer's Order\n" +
             "B. View Order With Highest Priority\n" +
@@ -195,6 +202,7 @@ public class GameStopInterface {
             "D. Ship A Customer's Order\n" +
             "X. Exit\n\n" +
             "Enter your choice: ");
+            }
         }
         return obj.next();
     }
@@ -208,14 +216,17 @@ public class GameStopInterface {
        if( user instanceof Customer){
             System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
             performOption(obj, user);
-       } else if( user instanceof Employee){ //and check manager status isAccReal.isManger == true
-        System.out.println("\nInvalid menu option. Please enter A-E or X to exit.\n");
-        performOption(obj, user);
-      } else if ( user instanceof Employee){
+       } else if( user instanceof Employee){ 
+        Employee emp = (Employee) user;
+        if(emp.isManager()){ 
+            System.out.println("\nInvalid menu option. Please enter A-E or X to exit.\n");
+            performOption(obj, user);
+        } else {
         System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
         performOption(obj, user);
         }
     }
+ }
 
      /**
      * Handles the exit option, closing the scanner, writing to the file of the changes that occured in the databases and displaying a goodbye message.
@@ -237,19 +248,18 @@ public class GameStopInterface {
      */
     public static User doesAccountExist(String email, String password, HashTable<Customer> customers, HashTable<Employee> employees) {  
         User user = null;
-       // Customer cus = new Customer(email, password);
-        //Employee emp = new Employee( email, password);
+        Customer cus = new Customer(email, password);
+        Employee emp = new Employee( email, password);
 
-    //   if(  customers.get(cus) != null){
-       //     user = customers.get(cus);
-    //   } else if (  employees.get(emp) != null ){
-     //  user =  employees.get(emp);
-   // }
-      //User emp = new Employee("g", "g", "g", "pw", true); --> just used it to test stuff
+        if(  customers.get(cus) != null){
+             user = customers.get(cus);
+        } else if (  employees.get(emp) != null ){
+            user =  employees.get(emp); // right now not wroking becuase no hashcode in customer and employee class AND NEED equal method to be overrideen
+        }
       return user;
     }
 
-    public static void fillCustomers( File file, HashTable<Customer> cuHashTable, HashTable<VideoGame> vidHashTable){       
+    public static void fillCustomers( File file, HashTable<Customer> cuHashTable, HashTable<VideoGame> vidHashTable, ArrayList<Order> allUnShipped){       
         try {
             Scanner input = new Scanner(file);
             while (input.hasNextLine()) {
@@ -257,22 +267,68 @@ public class GameStopInterface {
                 String email = input.next();
                 String password = input.next();
                 double cashBalance = input.nextDouble();
-                int numOfGames = input.nextInt();
+                int numOfShipped = input.nextInt();
                 if(input.hasNextLine()){
                     input.nextLine();
                 }
-                ArrayList<VideoGame> vidgameList = new ArrayList<>();
-                //here create a video game arraylist that holds all games cust owns
-                for (int i = 0; i < numOfGames; i++) {
+              
+                ArrayList<Order> shippVideoGames = new ArrayList<>();
+                ArrayList<Order> cuUnshipped = new ArrayList<>();
+              
+                for (int i = 0; i < numOfShipped; i++) {
                     String gameName = input.nextLine();
+
+                    int sum = 0;
+                    //String key = name + email + password + gameName;
+                    String key = name;
+                    for(int j = 0; j < key.length(); j++){
+                    sum += key.charAt(j);
+                    }
+                    int orderID = sum; 
+
+                    int priorityNum = input.nextInt();
                     VideoGame videoGame = new VideoGame(gameName);
                     VideoGame game = vidHashTable.get(videoGame);
-                    vidgameList.add(game);
+                   
+                 // shippVideoGames.add(); add a order that contains game, id , priportiy #
+                 if(input.hasNextLine()){
+                    input.nextLine();
                 }
+             }
+
+                int numOfUnshipped = 0;
+                if(input.hasNextLine()){
+                    numOfUnshipped = input.nextInt();
+                    input.nextLine();
+                }
+               
+
+                for (int i = 0; i < numOfUnshipped; i++) {
+                    String gameName = input.nextLine();
+                    
+                    int sum = 0;
+                    //String key = name + email + password + gameName;
+                    String key = name;
+                    for(int j = 0; j < key.length(); j++){
+                    sum += key.charAt(j);
+                    }
+                    int orderID = sum; 
+
+                    int priorityNum = input.nextInt();
+                    VideoGame videoGame = new VideoGame(gameName);
+                    VideoGame game = vidHashTable.get(videoGame);
+                   // cuUnshipped.add(new Order()); add a order that contains game, id , priportiy #
+                   // allUnShipped.add(new Order()); add a order that contains game, id , priportiy #
+                   if(input.hasNextLine()){
+                    input.nextLine();
+                }
+             }
+
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
                 String lastName = name.substring(spaceLoc + 1);
-              //cuHashTable.add(new Customer()); create and add all things into cust object and push into hashtable
+               // cuHashTable.add(new Customer(firstName, lastName, email, password, cashBalance, numOfShipped, shippVideoGames, numOfUnshipped, cuUnshipped ));
+
                 if(input.hasNextLine()){
                     input.nextLine();
                 }
@@ -284,7 +340,7 @@ public class GameStopInterface {
         }  
     }
 
-    public static void fillEmployee (File file, HashTable<Employee> empHashTable){
+    public static void fillEmployee (File file, HashTable<Employee> empHashTable,  HashTable<VideoGame> vidHashTable,  HashTable<Customer> customers, ArrayList<Order> allUnShipped){
         try {
             Scanner input = new Scanner(file);
             while (input.hasNextLine()) {
@@ -297,7 +353,7 @@ public class GameStopInterface {
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
                 String lastName = name.substring(spaceLoc + 1);
-                // empHashTable.add(new Employee()); create and add all things into emp object and push into hashtable
+                 empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, vidHashTable)); 
                 if(input.hasNextLine()){
                     input.nextLine();
                     input.nextLine();
@@ -307,7 +363,7 @@ public class GameStopInterface {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-        } 
+        }
     }
 
     public static void fillVideoGames (File file, HashTable<VideoGame> vidHashTable){
@@ -343,6 +399,6 @@ public class GameStopInterface {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-        } 
+        }
     }
 }

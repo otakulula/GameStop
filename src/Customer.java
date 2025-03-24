@@ -528,4 +528,23 @@
  
          return sb.toString();
      }
+
+      /**
+     * Returns a consistent hash code for each Customer email + password
+     * by summing the Unicode values of each character in the key
+     * Key = title
+     * @return the hash code
+     */
+        @Override
+        public int hashCode() {
+            int sum = 0;
+            String key = getEmail();
+            key += getPassword();
+            for (int i = 0; i < key.length(); i++) {
+                sum += (int) key.charAt(i);
+            }
+            return sum;
+        }
+
+
  }
