@@ -28,6 +28,13 @@ public class Order {
 		this.orderID = orderID;
 		this.orderContents.addLast(game);
 		this.priority = priority;
+		
+		//reverse calculate date and shippingspeed
+		int shippingSpeed = calculateShippingSpeed(priority);
+		this.shippingSpeed = shippingSpeed;
+		
+		String date = calculateDate(priority);
+		this.date = date;
 	}
 	
     /**
@@ -150,6 +157,48 @@ public class Order {
 	}
 	
 	/**ADDITIONAL METHODS */
+	
+	public String calculateDate(int priority) {
+		int date = priority % 10000;
+		int day = date % 100; // --> 12 or 06
+		int month = date / 100; //--> 12 or 1
+		
+		String dayStr = "" + day;
+		String monthStr = "";
+		if(month == 1) {
+			monthStr += "January";
+		} else if(month == 2) {
+			monthStr += "February";
+		} else if(month == 3) {
+			monthStr += "May";
+		} else if(month == 4) {
+			monthStr += "April";
+		} else if(month == 5) {
+			monthStr += "March";
+		} else if(month == 6) {
+			monthStr += "June";
+		} else if(month == 7) {
+			monthStr += "July";
+		} else if(month == 8) {
+			monthStr += "August";
+		} else if(month == 9) {
+			monthStr += "September";
+		} else if(month == 10) {
+			monthStr += "October";
+		} else if(month == 11) {
+			monthStr += "November";
+		} else if(month == 12) {
+			monthStr += "December";
+		}
+		
+		String dateStr = monthStr + ", " + dayStr;
+		return dateStr;
+	}
+	
+	public int calculateShippingSpeed(int priority) {
+		int shippingSpeed = priority/10000;
+		return shippingSpeed;
+	}
 	
 	/**
 	 * Adds a game to the order
