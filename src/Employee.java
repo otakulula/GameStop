@@ -3,13 +3,13 @@
   * @author Huey Nguyen
   * CIS 22C, Final Project
   */
+import DataStructures.BST;
+import DataStructures.HashTable;
+import DataStructures.Heap;
+import DataStructures.LinkedList;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import DataStructures.BST;
-import DataStructures.LinkedList;
-import DataStructures.Heap;
-import DataStructures.HashTable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
