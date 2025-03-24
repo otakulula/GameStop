@@ -13,25 +13,23 @@ public class Order {
 	private Customer customer;
 	private String date;
 	private LinkedList<VideoGame> orderContents;
-	private int shippingSpeed; // or use enums
+	private int shippingSpeed;
 	private int priority;
 	
-	
-	
-	/*
-	 * getters, setters, constructors go here
-	 * 
-	 * priority que needed
-	 * orders stored in order of priority in a priority queue that is based on a heap data 
-	 * structure
-	 * inserts, sorts, and removes according to an elements priority
-	 * 
-	 * priority is to be assigned according to the date and time of the order and the
-	 * shipping speed selected by the customer
-	 * */
-	
 	/**CONSTRUCTORS */
-
+	/**
+	 * Three-argument construcotr, when only the order id, order contents, 
+	 * and order priority are known
+	 * @param orderID the id of the order
+	 * @param game the game being ordered
+	 * @priority the priority of the order
+	 * */
+	public Order(int orderID, VideoGame game, int priority) {
+		this.orderID = orderID;
+		this.orderContents.addLast(game);
+		this.priority = priority;
+	}
+	
     /**
      * Full-argument constructor for Order
      * @param orderID the id of the order
@@ -50,14 +48,6 @@ public class Order {
 		
 		this.priority = calculatePriority();
 	}
-	
-	//piroority 1, 2, or 3 based on priority
-	// if multiple priority 1s then its ordered based off of data
-	//comparators
-	
-	//priority is calculated based off of shipping data
-	//if i consider month as hundreds
-	//and if i consider day tens
 	
     /**ACCESSORS */
 
