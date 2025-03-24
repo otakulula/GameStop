@@ -152,6 +152,14 @@ public class Order {
 	/**ADDITIONAL METHODS */
 	
 	/**
+	 * Adds a game to the order
+	 * @param game The game to be added to the order
+	 * */
+	public void addGame(VideoGame game) {
+		this.orderContents.addLast(game);
+	}
+	
+	/**
      * Turns the order date into an integer
      * @returns the order date as an integer
      */
