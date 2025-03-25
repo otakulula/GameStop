@@ -16,28 +16,8 @@ public class Customer extends User {
     private LinkedList<Order> shippedOrders;
     private LinkedList<Order> unshippedOrders;
     private Heap<Order> pendingOrders;
-    private int nextOrderID; // also not needed
     private double cashBalance;
     private boolean isGuest;
-
-    // /**
-    //  * Constructor for Customer.
-    //  * 
-    //  * @param firstName The first name of the customer.
-    //  * @param lastName  The last name of the customer.
-    //  * @param email     The email address of the customer.
-    //  * @param password  The password for the customer.
-    //  */
-    // public Customer(String firstName, String lastName, String email, String password) {
-    //     super(firstName, lastName, email, password);
-    //     this.shippedOrders = new LinkedList<>();
-    //     this.unshippedOrders = new LinkedList<>();
-    //     this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-    //     this.nextOrderID = 1;
-    //     this.ownedGames = new ArrayList<>();
-    //     this.cashBalance = 0.0;
-    //     this.isGuest = false;
-    // }
 
     /**
      * Constructor with comprehensive customer details including order information.
@@ -59,19 +39,23 @@ public class Customer extends User {
 
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
-        this.pendingOrders = new Heap<>(unshippedVideoGames, orderPriorityComparator);
-        this.nextOrderID = 1;
+        this.pendingOrders = new Heap<>(unshippedVideoGames != null ? unshippedVideoGames : new ArrayList<>(),
+                orderPriorityComparator);
 
         this.cashBalance = cashBalance;
         this.isGuest = false;
-       
-     
-        // ALSO PUT IN unshippedVideogames into  unshippedOrders LINKEDLIST!!!!!!
+
+        // Add shipped orders to shippedOrders LinkedList
         if (shippedVideoGames != null) {
             for (Order order : shippedVideoGames) {
                 this.shippedOrders.addLast(order);
-                order.ordercontent().positionIterator();
-               
+            }
+        }
+
+        // Add unshipped orders to unshippedOrders LinkedList
+        if (unshippedVideoGames != null) {
+            for (Order order : unshippedVideoGames) {
+                this.unshippedOrders.addLast(order);
             }
         }
     }
@@ -87,7 +71,6 @@ public class Customer extends User {
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-        this.nextOrderID = 1;
         this.cashBalance = 0.0;
         this.isGuest = false;
     }
@@ -104,7 +87,6 @@ public class Customer extends User {
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-        this.nextOrderID = 1;
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
     }
@@ -123,7 +105,6 @@ public class Customer extends User {
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-        this.nextOrderID = 1;
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
     }
@@ -144,6 +125,15 @@ public class Customer extends User {
      */
     public LinkedList<Order> getUnshippedList() {
         return unshippedOrders;
+    }
+
+    /**
+     * Retrieves the heap of pending orders.
+     * 
+     * @return A Heap of pending orders.
+     */
+    public Heap<Order> getPendingOrders() {
+        return pendingOrders;
     }
 
     /**
@@ -193,36 +183,57 @@ public class Customer extends User {
     };
 
     /**
+     * Combines unshipped orders into a single heap for easy access.
+     * 
+     * @return A Heap containing only unshipped orders.
+     */
+    public Heap<Order> consolidateOrders() {
+        
+        // Create an ArrayList to hold unshipped orders
+        ArrayList<Order> unshippedOrdersList = new ArrayList<>();
+
+        // Add all unshipped orders
+        this.unshippedOrders.positionIterator();
+        while (!this.unshippedOrders.offEnd()) {
+            unshippedOrdersList.add(this.unshippedOrders.getIterator());
+            this.unshippedOrders.advanceIterator();
+        }
+
+        // Create and return a new Heap with only unshipped orders
+        return new Heap<>(unshippedOrdersList, orderPriorityComparator);
+    }
+
+    /**
      * Places a new order with standard shipping.
      * 
-     * @param games The list of video games to order.
-     * @param date  The date of the order.
+     * @param game The video game to order.
+     * @param date The date of the order.
      * @return The order ID.
      */
-    public int placeStandardOrder(LinkedList<VideoGame> games, String date) {
-        return placeOrder(games, date, 1, 1);
+    public int placeStandardOrder(VideoGame game, String date) {
+        return placeOrder(game, date, 1);
     }
 
     /**
      * Places a new order with rush shipping.
      * 
-     * @param games The list of video games to order.
-     * @param date  The date of the order.
+     * @param game The video game to order.
+     * @param date The date of the order.
      * @return The order ID.
      */
-    public int placeRushOrder(LinkedList<VideoGame> games, String date) {
-        return placeOrder(games, date, 2, 2);
+    public int placeRushOrder(VideoGame game, String date) {
+        return placeOrder(game, date, 2);
     }
 
     /**
      * Places a new order with overnight shipping.
      * 
-     * @param games The list of video games to order.
-     * @param date  The date of the order.
+     * @param game The video game to order.
+     * @param date The date of the order.
      * @return The order ID.
      */
-    public int placeOvernightOrder(LinkedList<VideoGame> games, String date) {
-        return placeOrder(games, date, 3, 3);
+    public int placeOvernightOrder(VideoGame game, String date) {
+        return placeOrder(game, date, 3);
     }
 
     /**
@@ -235,20 +246,31 @@ public class Customer extends User {
      *                      first).
      * @return The order ID.
      */
-    private int placeOrder(LinkedList<VideoGame> games, String date, int shippingSpeed, int priority) {
-        int orderId = nextOrderID++;
-        Order newOrder = new Order(orderId, this, date, games, shippingSpeed);
-        pendingOrders.insert(newOrder);
+    /**
+     * Places a new order.
+     * 
+     * @param game          The video game to order.
+     * @param date          The date of the order.
+     * @param shippingSpeed The shipping speed (1=standard, 2=rush, 3=overnight).
+     * @return The order ID.
+     */
+    public int placeOrder(VideoGame game, String date, int shippingSpeed) {
+        // Validate input
+        if (game == null || date == null) {
+            throw new IllegalArgumentException("Game and date cannot be null");
+        }
+
+        LinkedList<VideoGame> gameList = new LinkedList<>();
+        gameList.addLast(game);
+
+        // Use the current size of unshippedOrders + 1 as the order ID
+        int orderId = unshippedOrders.getLength() + 1;
+
+        Order newOrder = new Order(orderId, this, date, gameList, shippingSpeed);
         unshippedOrders.addLast(newOrder);
 
-        if (!games.isEmpty()) {
-            games.positionIterator();
-            while (!games.offEnd()) {
-                VideoGame game = games.getIterator();
-                game.decreaseStock(1);
-                games.advanceIterator();
-            }
-        }
+        // Decrease game stock
+        game.decreaseStock(1);
 
         return orderId;
     }
@@ -259,24 +281,41 @@ public class Customer extends User {
      * @return The order that was processed, or null if no orders to process.
      */
     public Order processNextOrder() {
-        if (pendingOrders.getHeapSize() == 0) {
+        if (unshippedOrders.getLength() == 0) {
             return null;
         }
 
-        Order nextOrder = pendingOrders.getMax();
-        pendingOrders.remove(1);
+        // Find and remove the highest priority order
+        Order highestPriorityOrder = null;
+        int highestPriority = Integer.MIN_VALUE;
+        int highestPriorityIndex = -1;
 
         unshippedOrders.positionIterator();
-        while (!unshippedOrders.offEnd()) {
-            if (unshippedOrders.getIterator().getOrderID() == nextOrder.getOrderID()) {
-                unshippedOrders.removeIterator();
-                break;
+        for (int i = 0; i < unshippedOrders.getLength(); i++) {
+            Order currentOrder = unshippedOrders.getIterator();
+            if (currentOrder.getPriority() > highestPriority) {
+                highestPriority = currentOrder.getPriority();
+                highestPriorityOrder = currentOrder;
+                highestPriorityIndex = i;
             }
             unshippedOrders.advanceIterator();
         }
 
-        shippedOrders.addLast(nextOrder);
-        return nextOrder;
+        // Remove the highest priority order
+        if (highestPriorityOrder != null) {
+            // Reset iterator and remove the order
+            unshippedOrders.positionIterator();
+            for (int i = 0; i < highestPriorityIndex; i++) {
+                unshippedOrders.advanceIterator();
+            }
+            unshippedOrders.removeIterator();
+
+            // Add to shipped orders
+            shippedOrders.addLast(highestPriorityOrder);
+            return highestPriorityOrder;
+        }
+
+        return null;
     }
 
     /**
@@ -297,20 +336,6 @@ public class Customer extends User {
         return unshippedOrders.toString();
     }
 
-    // NO NEED OF THIS: becuase of there is already :  viewShippedOrders and viewShippedOrders methods!!!!!
-    //  * Gets a list of all orders (both shipped and unshipped).
-    //  * 
-    //  * @return A string representation of all orders.
-    //  */
-    // public String viewAllOrders() {
-    //     StringBuilder sb = new StringBuilder();
-    //     sb.append("Shipped Orders:\n");
-    //     sb.append(viewShippedOrders());
-    //     sb.append("\nUnshipped Orders:\n");
-    //     sb.append(viewUnshippedOrders());
-    //     return sb.toString();
-    // }
-
     /**
      * Writes all customer data to a file.
      * 
@@ -319,27 +344,16 @@ public class Customer extends User {
      */
     public boolean writeToFile(String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename, true))) {
-            // Write customer full name (first + last)
+
             writer.println(getFirstName() + " " + getLastName());
 
-            // Write email
             writer.println(getEmail());
 
-            // Write password
             writer.println(getPassword());
 
             // Write cash balance
             writer.println(cashBalance);
 
-            // Write number of owned games
-         //   writer.println(ownedGames.size());
-
-            // Write each owned game title on a new line
-            // for (VideoGame game : ownedGames) {
-            //     writer.println(game.getTitle());
-            // }
-
-            // Add an extra newline at the end for separation
             writer.println();
 
             return true;
@@ -363,16 +377,6 @@ public class Customer extends User {
         sb.append("Email: ").append(getEmail()).append("\n");
         sb.append("Cash Balance: $").append(String.format("%.2f", cashBalance)).append("\n");
         sb.append("Guest: ").append(isGuest ? "Yes" : "No").append("\n");
-
-        // Owned games
-        // sb.append("\nOwned Games (").append(ownedGames.size()).append("):\n");
-        // if (ownedGames.isEmpty()) {
-        //     sb.append("  No games owned\n");
-        // } else {
-        //     for (VideoGame game : ownedGames) {
-        //         sb.append("  ").append(game.getTitle()).append("\n");
-        //     }
-        // }
 
         // Order information
         sb.append("\nShipped Orders (").append(shippedOrders.getLength()).append("):\n");
