@@ -4,11 +4,9 @@
  * CIS 22C
  */
 
-import DataStructures.BST;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Comparator;
 
 public class VideoGame{
     private String title;
@@ -17,12 +15,6 @@ public class VideoGame{
     private int stock;
     private String ageRating;
     private String genre;
-
-    private static BST<VideoGame> gamesByTitle = new BST<>();
-    private static BST<VideoGame> gamesByGenre = new BST<>();
-
-    private static Comparator<VideoGame> titleComparator = new TitleComparator();
-    private static Comparator<VideoGame> genreComparator = new GenreComparator();
 
     /**CONSTRUCTORS */
 
@@ -112,42 +104,6 @@ public class VideoGame{
     /**MUTATORS */
 
     /**
-     * Adds the title and genre of the video game to the BSTs.
-     * @param game the video game to add
-     */
-    public static void addGame(VideoGame game){
-        gamesByTitle.insert(game, titleComparator);
-        gamesByGenre.insert(game, genreComparator);
-    }
-
-    /**
-     * Removes the title and genre of the video game from the BSTs.
-     * @param game the video game to remove
-     */
-    public static void removeGame(VideoGame game){
-        gamesByTitle.remove(game, titleComparator);
-        gamesByGenre.remove(game, genreComparator);
-    }
-
-    /**
-     * Searches for a video game by title.
-     * @param title the title of the video game to search for
-     */
-    public static VideoGame searchByTitle(String title){
-        VideoGame game = new VideoGame(title);
-        return gamesByTitle.search(game, titleComparator);
-    }
-
-    /**
-     * Searches for a video game by genre.
-     * @param genre the genre of the video game to search for
-     */
-    public static VideoGame searchByGenre(String genre){
-        VideoGame game = new VideoGame("", 0, "", 0, "", genre);
-        return gamesByGenre.search(game, genreComparator);
-    }
-
-    /**
      * Sets the title of the video game.
      * @param title the title of the video game
      */
@@ -196,38 +152,6 @@ public class VideoGame{
     }
 
     /**ADDITIONAL METHODS */
-
-    /**
-     * Compares two VideoGame objects by title.
-     */
-    private static class TitleComparator implements Comparator<VideoGame>{
-        /**
-         * Compares two VideoGame objects by title.
-         * @param game1 the first VideoGame
-         * @param game2 the second VideoGame
-         * @return 0 if the titles are the same, a positive number if the first title comes after the second title,
-         * and a negative number if the first title comes before the second title
-         */
-        public int compare(VideoGame game1, VideoGame game2){
-            return game1.title.compareTo(game2.title);
-        }
-    }
-
-    /**
-     * Compares two VideoGame objects by genre.
-     */
-    private static class GenreComparator implements Comparator<VideoGame>{
-        /**
-         * Compares two VideoGame objects by genre.
-         * @param game1 the first VideoGame
-         * @param game2 the second VideoGame
-         * @return 0 if the genres are the same, a positive number if the first genre comes after the second genre,
-         * and a negative number if the first genre comes before the second genre
-         */
-        public int compare(VideoGame game1, VideoGame game2){
-            return game1.genre.compareTo(game2.genre);
-        }
-    }
 
     /**
      * Increases the stock of the video game by a given amount.
