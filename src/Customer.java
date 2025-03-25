@@ -145,8 +145,8 @@ public class Customer extends User {
      * @param password The password for the customer.
      * @param isGuest  Whether the customer is a guest.
      */
-    public Customer(String email, String password, boolean isGuest) {
-        super("", "", email, password);
+    public Customer(String firstName, String lastName, String email, String password, boolean isGuest) {
+        super(firstName, lastName, email, password);
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.gamesByTitle = new BST<>();
@@ -156,7 +156,7 @@ public class Customer extends User {
         this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
-
+    
         if (ownedGames != null) {
             this.ownedGames = new ArrayList<>(ownedGames);
             // Add each game to both BSTs
