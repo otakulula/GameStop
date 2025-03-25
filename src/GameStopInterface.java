@@ -58,7 +58,7 @@ public class GameStopInterface {
             BST<VideoGame> videoGameDatabase_Genre = new BST<>();
     
             fillVideoGames(vgFile ,videoGameDatabase_Title, videoGameDatabase_Genre);
-           // fillCustomers(custFile, cuHashTable, videoGameDatabase_Title, allUnshippedOrders);
+            fillCustomers(custFile, cuHashTable, videoGameDatabase_Title, allUnshippedOrders);
             fillEmployee(empFile, empHashTable, videoGameDatabase_Title, cuHashTable, allUnshippedOrders);
     
             Scanner obj = new Scanner(System.in);
@@ -95,10 +95,10 @@ public class GameStopInterface {
                     String firstName = obj.next();
                     System.out.print("Enter your last name: ");
                     String lastName = obj.next();
-                  //  User newCus = new Customer(firstName, lastName, email, password, false);  // or should just use isAccReal and create it?
+                    User newCus = new Customer(firstName, lastName, email, password, false);  // or should just use isAccReal and create it?
                     System.out.println();
-                 //   System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
-                 //   performOption(obj, newCus);
+                    System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
+                    performOption(obj, newCus, videoGameDatabase_Title, videoGameDatabase_Genre);
                 }
             }
         }
@@ -131,13 +131,13 @@ public class GameStopInterface {
             Employee emp = (Employee) user;
             if( emp.isManager()){
                 if(c.equals("A")){
-                    // manager's option A
+                    searchCusOrder(obj, user, titleBST, genreBST);
                 } else if (c.equals("B")){
-                    // manager's option B
+                    highestPriorityOrder(obj, user, titleBST, genreBST);
                 } else if (c.equals("C")){
-                   // manager's option C
+                   viewAllOrders(obj, user, titleBST, genreBST);
                 } else if (c.equals("D")){
-                    // manager's option D
+                    shipOrder(obj, user, titleBST, genreBST);
                 } else if ( c.equals("E")){
                     // manager's option E
                 } else if ( c.equals("X")) {
@@ -147,13 +147,13 @@ public class GameStopInterface {
                 }
             } else {
                 if(c.equals("A")){
-                    // employee's option A
+                    searchCusOrder(obj, user, titleBST, genreBST);
                 } else if (c.equals("B")){
-                    // employee's option B
+                    highestPriorityOrder(obj, user, titleBST, genreBST);
                 } else if (c.equals("C")){
-                    // employee's option C
+                    viewAllOrders(obj, user, titleBST, genreBST);
                 } else if (c.equals("D")){
-                    // employee's option D
+                    shipOrder(obj, user, titleBST, genreBST);
                 } else if ( c.equals("X")){
                     exitOptionX(obj);
                 } else {
@@ -163,6 +163,7 @@ public class GameStopInterface {
            }
         }
     
+         /* Customer Options: */
 
         public static void searchAGame ( Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             System.out.print("\nDo you want to search by Title (type 1) or genre (type 2): ");
@@ -170,7 +171,7 @@ public class GameStopInterface {
 
             if( answer == 1){ //title
                 System.out.print("\nType the Title of the video game: ");
-               obj.nextLine();
+                obj.nextLine();
                String gameName = obj.nextLine();
                 VideoGame videoGame = new VideoGame(gameName);
                 VideoGame game = titleBST.search(videoGame, titleComparator);
@@ -188,7 +189,106 @@ public class GameStopInterface {
             performOption(obj, user, titleBST, genreBST);
         }
 
+        public static void orderVideoGame(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Customer cus = (Customer) user;
+            performOption(obj, cus, titleBST, genreBST);
+        }
 
+        public static void viewPurchasedGames(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Customer cus = (Customer) user;
+            if(!cus.isGuest()){
+                System.out.print("\nDo you want to see your shipped (type 1) or unshipped (type 2) orders: ");
+                int answer = obj.nextInt();
+                if(answer == 1){
+                    System.out.print("\nHere is Shipped orders:\n" + cus.viewShippedOrders());
+                } else {
+                    System.out.print("\nHere is Unshipped orders:\n" + cus.viewUnshippedOrders());
+                }
+            } else {
+                System.out.print("As a Guest, you don't have an account to see your purchased videogames!\n"+
+                "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
+                int choice = obj.nextInt();
+
+                if(choice == 1){
+                    System.out.print("Enter your first name: ");
+                    String firstName = obj.next();
+                    System.out.print("Enter your last name: ");
+                    String lastName = obj.next();
+                    cus.setFirstName(firstName); 
+                    cus.setLastName(lastName);
+                    cus.setGuest(false);
+                    System.out.println();
+                    System.out.print("Welcome, " + cus.getFirstName() + " " + cus.getLastName() + "!\n\n\n");
+                }
+            }
+            performOption(obj, cus, titleBST, genreBST);
+        }
+
+        /* Employee and Manager Options: */
+
+        public static void searchCusOrder(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Employee emp = (Employee) user;
+            System.out.print("\nDo you want to search by Order ID (type 1) or by customer's name (type 2)");
+            int answer = obj.nextInt();
+
+            if( answer == 1){ // order id
+                System.out.print("\nType the Order ID: ");
+                int orderId = obj.nextInt();
+                System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderById(orderId));
+            } else {
+                System.out.print("\nEnter the customer's full name: ");
+                obj.nextLine();
+                String cusName = obj.nextLine();
+                int spaceLoc = cusName.indexOf(' ');
+                String firstName = cusName.substring(0, spaceLoc);
+                String lastName = cusName.substring(spaceLoc + 1);
+                System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderByCustomerName(firstName, lastName));
+            }
+            performOption(obj, emp, titleBST, genreBST);
+        }
+
+        public static void highestPriorityOrder (Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Employee emp = (Employee) user;
+            System.out.print("\n\nCurrently the Order with the highest priority is:\n");
+            emp.viewHighestPriorityOrder();
+            performOption(obj, user, titleBST, genreBST);
+        }
+
+        public static void viewAllOrders(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) {
+            Employee emp = (Employee) user;
+            emp.viewAllOrders();
+            performOption(obj, emp, titleBST, genreBST);
+        }
+
+        public static void shipOrder(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Employee emp = (Employee) user;
+            System.out.print("\nType the Order ID: ");
+            int orderId = obj.nextInt();
+            emp.shipOrder(orderId);
+            System.out.print("\nThe order has been shipped!");
+            performOption(obj, emp, titleBST, genreBST);
+        }
+
+        public static void updateVideoGameDB(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+            Employee emp = (Employee) user;
+            System.out.print("Would you like to:\n1. Add a new game\n2. Remove a existing game\n3. Update a existing game's info\n\nEnter your choice: ");
+            int answer = obj.nextInt();
+
+            if( answer == 1){
+                // add a new game
+                System.out.print("\nNew");
+            } else if ( answer == 2){
+                System.out.print("\nName of video game to Remove: ");
+                obj.nextLine();
+                String gameName = obj.nextLine();
+                System.out.print("\n" + gameName + " is removed.");
+            } else{
+                
+                // update a game HAVE TO GIVE GAME TITLE
+            }
+            performOption(obj, user, titleBST, genreBST);
+        }
+        
           /**
          * Displays the menu options and returns the user's choice.
          * @param obj The Scanner object to read user input.
@@ -212,7 +312,7 @@ public class GameStopInterface {
                     "B. View Order With Highest Priority\n" +
                     "C. View All Orders Sorted by Priority\n" + // show all customers organzied by priority
                     "D. Ship A Customer's Order\n" +
-                    "E. Update The Video Game Database" + // like add a new game, remove a game, or update game's info
+                    "E. Update The Video Game Database\n" + // like add a new game, remove a game, or update game's info
                     "X. Exit\n\n" +
                     "Enter your choice: ");
                 } else {
@@ -275,9 +375,9 @@ public class GameStopInterface {
             if(  customers.get(cus) != null){
                  user = customers.get(cus);
             } else if (  employees.get(emp) != null ){
-                user =  employees.get(emp); // right now not wroking becuase no hashcode in customer and employee class AND NEED equal method to be overrideen
+                user =  employees.get(emp);
             }
-          return user;
+            return user;
         }
 
         public static void fillCustomers( File file, HashTable<Customer> cuHashTable, BST<VideoGame> titleBST, ArrayList<Order> allUnShipped){       
@@ -348,7 +448,7 @@ public class GameStopInterface {
                     int spaceLoc = name.indexOf(' ');
                     String firstName = name.substring(0, spaceLoc);
                     String lastName = name.substring(spaceLoc + 1);
-                    Customer cus = new Customer(firstName, lastName, email, password, cashBalance, numOfShipped, shippVideoGames, numOfUnshipped, cuUnshipped );
+                     Customer cus = new Customer(firstName, lastName, email, password, cashBalance, numOfShipped, shippVideoGames, numOfUnshipped, cuUnshipped );
                      cuHashTable.add(cus);
     
                     for (int i = 0; i < cuUnshipped.size(); i++) {
@@ -382,7 +482,7 @@ public class GameStopInterface {
                     int spaceLoc = name.indexOf(' ');
                     String firstName = name.substring(0, spaceLoc);
                     String lastName = name.substring(spaceLoc + 1);
-                 //   empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, titleBST, allUnShipped)); 
+                    empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, titleBST, allUnShipped)); 
                     if(input.hasNextLine()){
                         input.nextLine();
                         input.nextLine();
