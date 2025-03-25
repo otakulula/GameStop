@@ -3,13 +3,13 @@
   * @author Huey Nguyen
   * CIS 22C, Final Project
   */
-import DataStructures.BST;
-import DataStructures.HashTable;
-import DataStructures.Heap;
-import DataStructures.LinkedList;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import DataStructures.BST;
+import DataStructures.LinkedList;
+import DataStructures.Heap;
+import DataStructures.HashTable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -274,6 +274,24 @@ public class Employee extends User{
             sum += (int) key.charAt(i);
         }
         return sum;
+    }
+
+    /**
+     * Compares two employee objects for equality.
+     * They are equal if the title is the same.
+     * @param o the other employee to compare to
+     * @return true if the employees are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o){
+        if(o == this){
+            return true;
+        } else if(!(o instanceof Employee)){
+            return false;
+        } else {
+            Employee employee = (Employee)o;
+             return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
+        }
     }
 
 }
