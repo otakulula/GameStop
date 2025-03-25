@@ -16,11 +16,9 @@ import java.util.Comparator;
 public class Employee extends User{
 
     private boolean isManager;
-    private LinkedList<Order> unshippedOrders;
-    private LinkedList<Order> shippedOrders;
     private BST<VideoGame> gameCatalog;
-    private HashTable<VideoGame> gameTable;
     private HashTable<Customer> customers;
+    private Heap<Order> unshippedOrders;
     
 
     /**
@@ -32,14 +30,15 @@ public class Employee extends User{
      * @param password The password for the employee.
      * @param isManager Indicates if the employee is a manager.
      */
-    public Employee(String firstName, String lastName, String email, String password, boolean isManager, HashTable<Customer> customers, HashTable<VideoGame> gameTable) {
+    public Employee(String firstName, String lastName, String email,
+     String password, boolean isManager, HashTable<Customer> customers,
+      ArrayList<Order> games) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
-        this.unshippedOrders = new LinkedList<>();
-        this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
-        this.gameTable = gameTable;
         this.customers = customers;
+        this.unshippedOrders = new Heap<>(games, new OrderPriorityComparator());
+        
     }
      /**
       * Employee constructor only email and password
@@ -50,10 +49,7 @@ public class Employee extends User{
     public Employee(String email, String password){
         super("", "", email, password);
         this.isManager = false;        
-        this.unshippedOrders = new LinkedList<>();
-        this.shippedOrders = new LinkedList<>();
         this.gameCatalog = new BST<>();
-        this.gameTable = new HashTable<>(10);
         this.customers = new HashTable<>(10); 
     }
 
