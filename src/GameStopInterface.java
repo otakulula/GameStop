@@ -59,7 +59,7 @@ public class GameStopInterface {
     
             fillVideoGames(vgFile ,videoGameDatabase_Title, videoGameDatabase_Genre);
             fillCustomers(custFile, cuHashTable, videoGameDatabase_Title, allUnshippedOrders);
-            fillEmployee(empFile, empHashTable, videoGameDatabase_Title, cuHashTable, allUnshippedOrders);
+            fillEmployee(empFile, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, cuHashTable, allUnshippedOrders);
     
             Scanner obj = new Scanner(System.in);
             System.out.println("Welcome to Game Stop!");
@@ -119,9 +119,9 @@ public class GameStopInterface {
             } else if (c.equals("B")){
                 viewAllGames(obj, user, titleBST, genreBST);
             } else if (c.equals("C")){
-                // customer's option C
+                orderVideoGame(obj, user, titleBST, genreBST);
             } else if (c.equals("D")){
-                // customer's option D
+                viewPurchasedGames(obj, user, titleBST, genreBST);
             } else if ( c.equals("X")){
                 exitOptionX(obj);
             } else {
@@ -139,7 +139,7 @@ public class GameStopInterface {
                 } else if (c.equals("D")){
                     shipOrder(obj, user, titleBST, genreBST);
                 } else if ( c.equals("E")){
-                    // manager's option E
+                    updateVideoGameDB(obj, user, titleBST, genreBST);
                 } else if ( c.equals("X")) {
                     exitOptionX(obj);
                 } else{
@@ -191,6 +191,17 @@ public class GameStopInterface {
 
         public static void orderVideoGame(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             Customer cus = (Customer) user;
+            if(!cus.isGuest()){
+                System.out.print(titleBST.inOrderString());
+                System.out.println();
+                System.out.print("\nEnter the name of video game you want to order: ");
+                obj.nextLine();
+                String gameName = obj.nextLine();
+                System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
+                int answer = obj.nextInt();
+                System.out.print("\nEnter the date you ordred");
+                // NEED TO FINISH
+            }
             performOption(obj, cus, titleBST, genreBST);
         }
 
@@ -205,7 +216,7 @@ public class GameStopInterface {
                     System.out.print("\nHere is Unshipped orders:\n" + cus.viewUnshippedOrders());
                 }
             } else {
-                System.out.print("As a Guest, you don't have an account to see your purchased videogames!\n"+
+                System.out.print("\nAs a Guest, you don't have an account to see your purchased videogames!\n"+
                 "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
                 int choice = obj.nextInt();
 
@@ -220,6 +231,7 @@ public class GameStopInterface {
                     System.out.println();
                     System.out.print("Welcome, " + cus.getFirstName() + " " + cus.getLastName() + "!\n\n\n");
                 }
+                System.out.println();
             }
             performOption(obj, cus, titleBST, genreBST);
         }
@@ -256,7 +268,7 @@ public class GameStopInterface {
 
         public static void viewAllOrders(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) {
             Employee emp = (Employee) user;
-            emp.viewAllOrders();
+            emp.viewAllOrders(); 
             performOption(obj, emp, titleBST, genreBST);
         }
 
@@ -265,26 +277,74 @@ public class GameStopInterface {
             System.out.print("\nType the Order ID: ");
             int orderId = obj.nextInt();
             emp.shipOrder(orderId);
-            System.out.print("\nThe order has been shipped!");
+            System.out.print("\nThe order has been shipped!\n");
             performOption(obj, emp, titleBST, genreBST);
         }
 
         public static void updateVideoGameDB(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             Employee emp = (Employee) user;
-            System.out.print("Would you like to:\n1. Add a new game\n2. Remove a existing game\n3. Update a existing game's info\n\nEnter your choice: ");
+            System.out.print("\nWould you like to:\n1. Add a new game\n2. Remove a existing game\n3. Update a existing game's info\n\nEnter your choice: ");
             int answer = obj.nextInt();
 
             if( answer == 1){
-                // add a new game
-                System.out.print("\nNew");
-            } else if ( answer == 2){
+                System.out.print("\n\nAdding a new game:\n");
+                System.out.print("\nEnter the name of the video game: ");
+                obj.nextLine();
+                String gameName = obj.nextLine();
+                System.out.print("\nEnter the price: ");
+                double price = obj.nextDouble();
+                System.out.print("\nEnter the game's Description: ");
+                obj.nextLine();
+                String gameDec = obj.nextLine();
+                System.out.print("\nEnter how many will be in stock: ");
+                int stock = obj.nextInt();
+                System.out.print("\nEnter the age rating of the game: ");
+                String ageString = obj.next();
+                System.out.print("\nEnter the genre of the game: ");
+                String genre = obj.next();
+                VideoGame newGame = new VideoGame(gameName, price, gameDec, stock, ageString, genre);
+                emp.addNewGame(newGame);
+                System.out.print("\n\nNew Game added!\n");
+            } else if (answer == 2){
                 System.out.print("\nName of video game to Remove: ");
                 obj.nextLine();
                 String gameName = obj.nextLine();
-                System.out.print("\n" + gameName + " is removed.");
+                System.out.print("\n" + gameName + " is removed.\n");
             } else{
-                
-                // update a game HAVE TO GIVE GAME TITLE
+                System.out.print("\nEnter the name of game you would like to update: ");
+                obj.nextLine();
+                String gameName = obj.nextLine();
+                System.out.print("\nWould you like to:\n1. Change the game name\n2. Change the price\n3. Change the description\n4. Change the stock\n5. Change the age rating\n6. Change the genre\n\nEnter a number choice: ");
+                int choice = obj.nextInt();
+
+                if(choice == 1){
+                    System.out.print("\nEnter the new Game Name: ");
+                    obj.nextLine();
+                    String gName = obj.nextLine();
+                    emp.updateGameByKey(gName, 0.00, null, 0, null, null);
+                } else if ( choice == 2){
+                    System.out.print("\nEnter the new Price: ");
+                    double cost = obj.nextDouble();
+                    emp.updateGameByKey(null, cost, null, 0, null, null);
+                } else if ( choice == 3){
+                    System.out.print("\nEnter the new Game Description: ");
+                    obj.nextLine();
+                    String gDec = obj.nextLine();
+                    emp.updateGameByKey(null, 0.00, gDec, 0, null, null);
+                } else if ( choice == 4){
+                    System.out.print("\nEnter the new Stock: ");
+                    int gameStock = obj.nextInt();
+                    emp.updateGameByKey(null, 0.00, null, gameStock, null, null);
+                } else if ( answer == 5){
+                    System.out.print("\nEnter the new Age Rating: ");
+                    String rating = obj.next();
+                    emp.updateGameByKey(null, 0.00, null, 0, rating, null);
+                } else {
+                    System.out.print("\nEnter the new Genre: ");
+                    String gameGenre = obj.next();
+                    emp.updateGameByKey(null, 0.00, null, 0, null, gameGenre);
+                } 
+                System.out.print("\n\nChange successful!\n");  
             }
             performOption(obj, user, titleBST, genreBST);
         }
@@ -469,7 +529,7 @@ public class GameStopInterface {
             }  
         }
     
-        public static void fillEmployee (File file, HashTable<Employee> empHashTable, BST<VideoGame> titleBST,  HashTable<Customer> customers, ArrayList<Order> allUnShipped){
+        public static void fillEmployee (File file, HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, HashTable<Customer> customers, ArrayList<Order> allUnShipped){
             try {
                 Scanner input = new Scanner(file);
                 while (input.hasNextLine()) {
@@ -482,7 +542,7 @@ public class GameStopInterface {
                     int spaceLoc = name.indexOf(' ');
                     String firstName = name.substring(0, spaceLoc);
                     String lastName = name.substring(spaceLoc + 1);
-                    empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, titleBST, allUnShipped)); 
+                    empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, titleBST, genreBST, allUnShipped)); 
                     if(input.hasNextLine()){
                         input.nextLine();
                         input.nextLine();
