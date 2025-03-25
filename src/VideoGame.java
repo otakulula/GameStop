@@ -252,7 +252,7 @@ public class VideoGame{
     @Override
     public String toString(){
         return title + "\nPrice: $" + price + "\nDescription: " + description + "\nStock: " 
-        + stock + "\nAge Rating: " + ageRating + "\nGenre: " + genre;
+        + stock + "\nAge Rating: " + ageRating + "\nGenre: " + genre + "\n";
     }
 
     /**
