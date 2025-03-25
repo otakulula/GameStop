@@ -27,6 +27,36 @@ public class Customer extends User {
     private StrComparator strComparator = new StrComparator();
 
     /**
+     * Constructor for Customer.
+     * 
+     * @param firstName The first name of the customer.
+     * @param lastName  The last name of the customer.
+     * @param email     The email address of the customer.
+     * @param password  The password for the customer.
+     */
+    public Customer(String firstName, String lastName, String email, String password) {
+        super(firstName, lastName, email, password);
+        this.shippedOrders = new LinkedList<>();
+        this.unshippedOrders = new LinkedList<>();
+        this.gamesByTitle = new BST<>();
+        this.gamesByGenre = new BST<>();
+        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
+        this.nextOrderID = 1;
+        this.ownedGames = new ArrayList<>();
+        this.cashBalance = 0.0;
+        this.isGuest = false;
+
+        if (ownedGames != null) {
+            this.ownedGames = new ArrayList<>(ownedGames);
+
+            for (VideoGame game : ownedGames) {
+                gamesByTitle.insert(game, titleComparator);
+                gamesByGenre.insert(game, genreComparator);
+            }
+        }
+    }
+
+    /**
      * Constructor with comprehensive customer details including order information.
      * 
      * @param firstName           The first name of the customer.
@@ -108,15 +138,8 @@ public class Customer extends User {
         }
     }
 
-    /**
-     * Constructor for Customer with isGuest parameter.
-     * 
-     * @param email    The email address of the customer.
-     * @param password The password for the customer.
-     * @param isGuest  Whether the customer is a guest.
-     */
-    public Customer(String firstName, String lastName, String email, String password, boolean isGuest) {
-        super(firstName, lastName, email, password);
+    public Customer(String email, String password, boolean isGuest) {
+        super("", "", email, password);
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.gamesByTitle = new BST<>();
@@ -127,6 +150,34 @@ public class Customer extends User {
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
     
+        if (ownedGames != null) {
+            this.ownedGames = new ArrayList<>(ownedGames);
+            // Add each game to both BSTs
+            for (VideoGame game : ownedGames) {
+                gamesByTitle.insert(game, titleComparator);
+                gamesByGenre.insert(game, genreComparator);
+            }
+        }
+    }
+    /**
+     * Constructor for Customer with isGuest parameter.
+     * 
+     * @param email    The email address of the customer.
+     * @param password The password for the customer.
+     * @param isGuest  Whether the customer is a guest.
+     */
+    public Customer(String firstName, String lastName, String email, String password, boolean isGuest) {
+        super("", "", email, password);
+        this.shippedOrders = new LinkedList<>();
+        this.unshippedOrders = new LinkedList<>();
+        this.gamesByTitle = new BST<>();
+        this.gamesByGenre = new BST<>();
+        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
+        this.nextOrderID = 1;
+        this.ownedGames = new ArrayList<>();
+        this.cashBalance = 0.0;
+        this.isGuest = isGuest;
+
         if (ownedGames != null) {
             this.ownedGames = new ArrayList<>(ownedGames);
             // Add each game to both BSTs
