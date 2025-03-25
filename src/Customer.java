@@ -16,29 +16,28 @@ public class Customer extends User {
     private LinkedList<Order> shippedOrders;
     private LinkedList<Order> unshippedOrders;
     private Heap<Order> pendingOrders;
-    private int nextOrderID;
-    private ArrayList<VideoGame> ownedGames;
+    private int nextOrderID; // also not needed
     private double cashBalance;
     private boolean isGuest;
 
-    /**
-     * Constructor for Customer.
-     * 
-     * @param firstName The first name of the customer.
-     * @param lastName  The last name of the customer.
-     * @param email     The email address of the customer.
-     * @param password  The password for the customer.
-     */
-    public Customer(String firstName, String lastName, String email, String password) {
-        super(firstName, lastName, email, password);
-        this.shippedOrders = new LinkedList<>();
-        this.unshippedOrders = new LinkedList<>();
-        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-        this.nextOrderID = 1;
-        this.ownedGames = new ArrayList<>();
-        this.cashBalance = 0.0;
-        this.isGuest = false;
-    }
+    // /**
+    //  * Constructor for Customer.
+    //  * 
+    //  * @param firstName The first name of the customer.
+    //  * @param lastName  The last name of the customer.
+    //  * @param email     The email address of the customer.
+    //  * @param password  The password for the customer.
+    //  */
+    // public Customer(String firstName, String lastName, String email, String password) {
+    //     super(firstName, lastName, email, password);
+    //     this.shippedOrders = new LinkedList<>();
+    //     this.unshippedOrders = new LinkedList<>();
+    //     this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
+    //     this.nextOrderID = 1;
+    //     this.ownedGames = new ArrayList<>();
+    //     this.cashBalance = 0.0;
+    //     this.isGuest = false;
+    // }
 
     /**
      * Constructor with comprehensive customer details including order information.
@@ -60,31 +59,19 @@ public class Customer extends User {
 
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
-        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
+        this.pendingOrders = new Heap<>(unshippedVideoGames, orderPriorityComparator);
         this.nextOrderID = 1;
 
         this.cashBalance = cashBalance;
         this.isGuest = false;
-        this.ownedGames = new ArrayList<>();
-
+       
+     
+        // ALSO PUT IN unshippedVideogames into  unshippedOrders LINKEDLIST!!!!!!
         if (shippedVideoGames != null) {
             for (Order order : shippedVideoGames) {
                 this.shippedOrders.addLast(order);
                 order.ordercontent().positionIterator();
-                while (!order.ordercontent().offEnd()) {
-                    VideoGame game = order.ordercontent().getIterator();
-                    if (!this.ownedGames.contains(game)) {
-                        this.ownedGames.add(game);
-                    }
-                    order.ordercontent().advanceIterator();
-                }
-            }
-        }
-
-        if (unshippedVideoGames != null) {
-            for (Order order : unshippedVideoGames) {
-                this.unshippedOrders.addLast(order);
-                this.pendingOrders.insert(order);
+               
             }
         }
     }
@@ -101,7 +88,6 @@ public class Customer extends User {
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
         this.nextOrderID = 1;
-        this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
         this.isGuest = false;
     }
@@ -119,7 +105,6 @@ public class Customer extends User {
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
         this.nextOrderID = 1;
-        this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
     }
@@ -139,37 +124,8 @@ public class Customer extends User {
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
         this.nextOrderID = 1;
-        this.ownedGames = new ArrayList<>();
         this.cashBalance = 0.0;
         this.isGuest = isGuest;
-    }
-
-    /**
-     * Constructor for Customer with all parameters.
-     * 
-     * @param firstName   The first name of the customer.
-     * @param lastName    The last name of the customer.
-     * @param email       The email address of the customer.
-     * @param password    The password for the customer.
-     * @param cashBalance The initial cash balance of the customer.
-     * @param numOfGames  The number of games the customer owns.
-     * @param ownedGames  The list of video games owned by the customer.
-     */
-    public Customer(String firstName, String lastName, String email, String password,
-            double cashBalance, int numOfGames, ArrayList<VideoGame> ownedGames) {
-        super(firstName, lastName, email, password);
-        this.shippedOrders = new LinkedList<>();
-        this.unshippedOrders = new LinkedList<>();
-        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
-        this.nextOrderID = 1;
-        this.cashBalance = cashBalance;
-        this.isGuest = false;
-
-        if (ownedGames != null) {
-            this.ownedGames = ownedGames;
-        } else {
-            this.ownedGames = new ArrayList<>();
-        }
     }
 
     /**
@@ -188,18 +144,6 @@ public class Customer extends User {
      */
     public LinkedList<Order> getUnshippedList() {
         return unshippedOrders;
-    }
-
-    public void addOwnedGame(VideoGame game) {
-        ownedGames.add(game);
-    }
-
-    public ArrayList<VideoGame> getOwnedGames() {
-        return ownedGames;
-    }
-
-    public void setOwnedGames(ArrayList<VideoGame> games) {
-        this.ownedGames = games;
     }
 
     /**
@@ -353,19 +297,19 @@ public class Customer extends User {
         return unshippedOrders.toString();
     }
 
-    /**
-     * Gets a list of all orders (both shipped and unshipped).
-     * 
-     * @return A string representation of all orders.
-     */
-    public String viewAllOrders() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Shipped Orders:\n");
-        sb.append(viewShippedOrders());
-        sb.append("\nUnshipped Orders:\n");
-        sb.append(viewUnshippedOrders());
-        return sb.toString();
-    }
+    // NO NEED OF THIS: becuase of there is already :  viewShippedOrders and viewShippedOrders methods!!!!!
+    //  * Gets a list of all orders (both shipped and unshipped).
+    //  * 
+    //  * @return A string representation of all orders.
+    //  */
+    // public String viewAllOrders() {
+    //     StringBuilder sb = new StringBuilder();
+    //     sb.append("Shipped Orders:\n");
+    //     sb.append(viewShippedOrders());
+    //     sb.append("\nUnshipped Orders:\n");
+    //     sb.append(viewUnshippedOrders());
+    //     return sb.toString();
+    // }
 
     /**
      * Writes all customer data to a file.
@@ -388,12 +332,12 @@ public class Customer extends User {
             writer.println(cashBalance);
 
             // Write number of owned games
-            writer.println(ownedGames.size());
+         //   writer.println(ownedGames.size());
 
             // Write each owned game title on a new line
-            for (VideoGame game : ownedGames) {
-                writer.println(game.getTitle());
-            }
+            // for (VideoGame game : ownedGames) {
+            //     writer.println(game.getTitle());
+            // }
 
             // Add an extra newline at the end for separation
             writer.println();
@@ -421,14 +365,14 @@ public class Customer extends User {
         sb.append("Guest: ").append(isGuest ? "Yes" : "No").append("\n");
 
         // Owned games
-        sb.append("\nOwned Games (").append(ownedGames.size()).append("):\n");
-        if (ownedGames.isEmpty()) {
-            sb.append("  No games owned\n");
-        } else {
-            for (VideoGame game : ownedGames) {
-                sb.append("  ").append(game.getTitle()).append("\n");
-            }
-        }
+        // sb.append("\nOwned Games (").append(ownedGames.size()).append("):\n");
+        // if (ownedGames.isEmpty()) {
+        //     sb.append("  No games owned\n");
+        // } else {
+        //     for (VideoGame game : ownedGames) {
+        //         sb.append("  ").append(game.getTitle()).append("\n");
+        //     }
+        // }
 
         // Order information
         sb.append("\nShipped Orders (").append(shippedOrders.getLength()).append("):\n");
