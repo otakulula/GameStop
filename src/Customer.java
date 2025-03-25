@@ -16,15 +16,15 @@ import DataStructures.Heap;
 public class Customer extends User {
     private LinkedList<Order> shippedOrders;
     private LinkedList<Order> unshippedOrders;
-    private BST<VideoGame> gamesByTitle;
-    private BST<VideoGame> gamesByGenre;
+    private BST<VideoGame> gamesByTitle; // dont need it here
+    private BST<VideoGame> gamesByGenre; // dont need it here
     private Heap<Order> pendingOrders;
     private int nextOrderID;
     private ArrayList<VideoGame> ownedGames;
     private double cashBalance;
     private boolean isGuest;
 
-    private StrComparator strComparator = new StrComparator();
+    //private StrComparator strComparator = new StrComparator();
 
     /**
      * Constructor for Customer.
@@ -50,8 +50,8 @@ public class Customer extends User {
             this.ownedGames = new ArrayList<>(ownedGames);
 
             for (VideoGame game : ownedGames) {
-                gamesByTitle.insert(game, titleComparator);
-                gamesByGenre.insert(game, genreComparator);
+               // gamesByTitle.insert(game, titleComparator);
+              //  gamesByGenre.insert(game, genreComparator);
             }
         }
     }
@@ -78,7 +78,7 @@ public class Customer extends User {
         this.unshippedOrders = new LinkedList<>();
         this.gamesByTitle = new BST<>();
         this.gamesByGenre = new BST<>();
-        this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
+        this.pendingOrders = new Heap<>(new ArrayList<Order>(30), orderPriorityComparator);
         this.nextOrderID = 1;
 
         this.cashBalance = cashBalance;
@@ -94,8 +94,8 @@ public class Customer extends User {
                     VideoGame game = order.ordercontent().getIterator();
                     if (!this.ownedGames.contains(game)) {
                         this.ownedGames.add(game);
-                        this.gamesByTitle.insert(game, titleComparator);
-                        this.gamesByGenre.insert(game, genreComparator);
+                //        this.gamesByTitle.insert(game, titleComparator);
+                //        this.gamesByGenre.insert(game, genreComparator);
                     }
                     order.ordercontent().advanceIterator();
                 }
@@ -132,8 +132,8 @@ public class Customer extends User {
             this.ownedGames = new ArrayList<>(ownedGames);
 
             for (VideoGame game : ownedGames) {
-                gamesByTitle.insert(game, titleComparator);
-                gamesByGenre.insert(game, genreComparator);
+            //    gamesByTitle.insert(game, titleComparator);
+            //    gamesByGenre.insert(game, genreComparator);
             }
         }
     }
@@ -154,8 +154,8 @@ public class Customer extends User {
             this.ownedGames = new ArrayList<>(ownedGames);
             // Add each game to both BSTs
             for (VideoGame game : ownedGames) {
-                gamesByTitle.insert(game, titleComparator);
-                gamesByGenre.insert(game, genreComparator);
+           //     gamesByTitle.insert(game, titleComparator);
+            //    gamesByGenre.insert(game, genreComparator);
             }
         }
     }
@@ -182,8 +182,8 @@ public class Customer extends User {
             this.ownedGames = new ArrayList<>(ownedGames);
             // Add each game to both BSTs
             for (VideoGame game : ownedGames) {
-                gamesByTitle.insert(game, titleComparator);
-                gamesByGenre.insert(game, genreComparator);
+           //     gamesByTitle.insert(game, titleComparator);
+           //     gamesByGenre.insert(game, genreComparator);
             }
         }
     }
@@ -215,8 +215,8 @@ public class Customer extends User {
             this.ownedGames = ownedGames;
 
             for (VideoGame game : ownedGames) {
-                gamesByTitle.insert(game, titleComparator);
-                gamesByGenre.insert(game, genreComparator);
+            //    gamesByTitle.insert(game, titleComparator);
+             //   gamesByGenre.insert(game, genreComparator);
             }
         } else {
             this.ownedGames = new ArrayList<>();
@@ -273,29 +273,29 @@ public class Customer extends User {
         this.isGuest = isGuest;
     }
 
-    /**
-     * Comparator for sorting VideoGames by title (primary key).
-     */
-    private Comparator<VideoGame> titleComparator = new Comparator<VideoGame>() {
-        @Override
-        public int compare(VideoGame game1, VideoGame game2) {
-            return strComparator.compare(game1.getTitle(), game2.getTitle());
-        }
-    };
+    // /**
+    //  * Comparator for sorting VideoGames by title (primary key).
+    //  */
+    // private Comparator<VideoGame> titleComparator = new Comparator<VideoGame>() {
+    //     @Override
+    //     public int compare(VideoGame game1, VideoGame game2) {
+    //         return strComparator.compare(game1.getTitle(), game2.getTitle());
+    //     }
+    // };
 
-    /**
-     * Comparator for sorting VideoGames by genre (secondary key).
-     */
-    private Comparator<VideoGame> genreComparator = new Comparator<VideoGame>() {
-        @Override
-        public int compare(VideoGame game1, VideoGame game2) {
-            int result = strComparator.compare(game1.getGenre(), game2.getGenre());
-            if (result == 0) {
-                return strComparator.compare(game1.getTitle(), game2.getTitle());
-            }
-            return result;
-        }
-    };
+    // /**
+    //  * Comparator for sorting VideoGames by genre (secondary key).
+    //  */
+    // private Comparator<VideoGame> genreComparator = new Comparator<VideoGame>() {
+    //     @Override
+    //     public int compare(VideoGame game1, VideoGame game2) {
+    //         int result = strComparator.compare(game1.getGenre(), game2.getGenre());
+    //         if (result == 0) {
+    //             return strComparator.compare(game1.getTitle(), game2.getTitle());
+    //         }
+    //         return result;
+    //     }
+    // };
 
     /**
      * Comparator for ordering Orders by priority.
@@ -307,39 +307,39 @@ public class Customer extends User {
         }
     };
 
-    /**
-     * Adds a video game to both BSTs.
-     * 
-     * @param game The video game to add.
-     */
-    public void addGame(VideoGame game) {
-        gamesByTitle.insert(game, titleComparator);
-        gamesByGenre.insert(game, genreComparator);
-    }
+    // /**
+    //  * Adds a video game to both BSTs.
+    //  * 
+    //  * @param game The video game to add.
+    //  */
+    // public void addGame(VideoGame game) {
+    //     gamesByTitle.insert(game, titleComparator);
+    //     gamesByGenre.insert(game, genreComparator);
+    // }
 
-    /**
-     * Searches for a video game by title.
-     * 
-     * @param title The title to search for.
-     * @return The video game if found, null otherwise.
-     */
-    public VideoGame searchByTitle(String title) {
-        VideoGame searchKey = new VideoGame(title);
-        return gamesByTitle.search(searchKey, titleComparator);
-    }
+    // /**
+    //  * Searches for a video game by title.
+    //  * 
+    //  * @param title The title to search for.
+    //  * @return The video game if found, null otherwise.
+    //  */
+    // public VideoGame searchByTitle(String title) {
+    //     VideoGame searchKey = new VideoGame(title);
+    //     return gamesByTitle.search(searchKey, titleComparator);
+    // }
 
-    /**
-     * Searches for video games by genre.
-     * 
-     * @param genre The genre to search for.
-     * @return The video game if found, null otherwise.
-     */
-    public VideoGame searchByGenre(String genre) {
-        // Create a temporary game with the search genre
-        VideoGame searchKey = new VideoGame("");
-        searchKey.setGenre(genre);
-        return gamesByGenre.search(searchKey, genreComparator);
-    }
+    // /**
+    //  * Searches for video games by genre.
+    //  * 
+    //  * @param genre The genre to search for.
+    //  * @return The video game if found, null otherwise.
+    //  */
+    // public VideoGame searchByGenre(String genre) {
+    //     // Create a temporary game with the search genre
+    //     VideoGame searchKey = new VideoGame("");
+    //     searchKey.setGenre(genre);
+    //     return gamesByGenre.search(searchKey, genreComparator);
+    // }
 
     /**
      * Lists all video games sorted by title.
