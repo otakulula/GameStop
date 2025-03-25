@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import DataStructures.BST;
-import DataStructures.LinkedList;
 import DataStructures.Heap;
 import DataStructures.HashTable;
 import java.util.ArrayList;
@@ -31,13 +30,13 @@ public class Employee extends User{
      * @param isManager Indicates if the employee is a manager.
      */
     public Employee(String firstName, String lastName, String email,
-     String password, boolean isManager, HashTable<Customer> customers,
-      ArrayList<Order> games) {
+     String password, boolean isManager, HashTable<Customer> customers, 
+     BST<VideoGame> videoGames, ArrayList<Order> allUnshippedGames) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
-        this.gameCatalog = new BST<>();
+        this.gameCatalog = new BST<>(videoGames, new VideoGameComparator());
         this.customers = customers;
-        this.unshippedOrders = new Heap<>(games, new OrderPriorityComparator());
+        this.unshippedOrders = new Heap<>(allUnshippedGames, new OrderPriorityComparator());
         
     }
      /**
@@ -98,18 +97,13 @@ public class Employee extends User{
      * @return order we are searching for
      */
     public Order searchOrderById(int orderID) {
-        unshippedOrders.positionIterator();
-        while(!unshippedOrders.offEnd()){
-            Order order = unshippedOrders.getIterator();
-            if(order.getOrderID() == orderID){
-                return order;
-            }
-            else{
-                unshippedOrders.advanceIterator();
+        ArrayList<Order> ordersList = unshippedOrders.sort();
+        for (int i = 0; i < ordersList.size(); i++) {
+            if (ordersList.get(i).getOrderID() == orderID) {
+                return ordersList.get(i);
             }
         }
         return null;
-
     }
     /**
      * Search for an order by customer's first and last name.
@@ -119,18 +113,15 @@ public class Employee extends User{
      */
 
     public Order searchOrderByCustomerName(String firstName, String lastName) {
-        unshippedOrders.positionIterator();
-        while (!unshippedOrders.offEnd()) {
-            Order order = unshippedOrders.getIterator();
-            if (this.getFirstName().equalsIgnoreCase(firstName) &&
-                this.getLastName().equalsIgnoreCase(lastName)) {
-                return order;
-            } 
-            else {
-                unshippedOrders.advanceIterator();
+        ArrayList<Order> ordersList = unshippedOrders.sort();
+            for (int i = 0; i < ordersList.size(); i++) {
+                Order order = ordersList.get(i);
+                if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
+                    order.getCustomer().getLastName().equalsIgnoreCase(lastName)) {
+                    return order;
+                }
             }
-        }
-        return null;
+            return null;
     }
     /**
      * View the next order in the priority 
@@ -138,55 +129,34 @@ public class Employee extends User{
      */
 
     public void viewHighestPriorityOrder() {
-        Order highestPriorityOrder = null;
-        unshippedOrders.positionIterator();
-        while (!unshippedOrders.offEnd()) {
-            Order currentOrder = unshippedOrders.getIterator();
-            if (highestPriorityOrder == null || currentOrder.getPriority() > highestPriorityOrder.getPriority()) {
-                highestPriorityOrder = currentOrder;
-            }
-            unshippedOrders.advanceIterator();
-        }
-        System.out.println(highestPriorityOrder);
-
+        System.out.println(unshippedOrders.getMax());
     }
 
     /**
      * Prints all the orders
      */
     public void viewAllOrders() {
-        ArrayList<Order> ordersArrayList = new ArrayList<>();
-        unshippedOrders.positionIterator();
-        while (!unshippedOrders.offEnd()) {
-            Order order = unshippedOrders.getIterator();
-            ordersArrayList.add(order);
-            unshippedOrders.advanceIterator();
-        }
-        Heap<Order> heap = new Heap<>(ordersArrayList, new OrderPriorityComparator());
-
-        ArrayList<Order> sortedOrders = heap.sort();
-
-        for (int i = 0; i < sortedOrders.size(); i++) {
-            System.out.println(sortedOrders.get(i)); 
-        }
+        System.out.println(unshippedOrders); 
     }
     /**
-     * ships an order out 
+     * ships an order out  (Need get shipped/unshipped list from customer class)
+     * (Remove from Heap. Insert Order to shipped Linked List for the Customer + Remove from Unshipped List)
      * @param orderID the order to be shipped
      */
     public void shipOrder(int orderID) {
         Order orderToShip = searchOrderById(orderID);
         if (orderToShip != null) {
-            while(!unshippedOrders.offEnd()){
-                unshippedOrders.positionIterator();
-                if(unshippedOrders.getIterator().getOrderID() == orderID){
-                    unshippedOrders.removeIterator();
-                }
-                else{
-                    unshippedOrders.advanceIterator();
-                }
-            }
-            shippedOrders.addLast(orderToShip);
+            unshippedOrders.remove(orderID);
+
+            //LinkedList<Order> shipped = orderToShip.getCustomer().getShippedList();
+            //shipped.addLast(orderToShip);
+
+            //LinkedList<Order> unshipped = orderToShip.getCustomer().getUnshippedList();
+            //int orderIndex = unshipped.findIndex(orderToShip);
+            //unshipped.advanceIteratorToIndex(orderIndex);
+            //unshipped.removeIterator();
+
+
             System.out.println("Order " + orderID + " has been shipped.");
         } 
         else {
@@ -199,11 +169,14 @@ public class Employee extends User{
      */
     public void writeToFile(String filename) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            shippedOrders.positionIterator();
-            while (!shippedOrders.offEnd()) {
-                pw.println(shippedOrders.getIterator().toString());
-                shippedOrders.advanceIterator();
-            }
+            //only writing the current employee
+            pw.println(getFirstName() + " " + getLastName());
+            pw.println(getEmail());
+            pw.println(getPassword());
+            //pw.println(employee id?);
+            pw.println(isManager());
+
+
         } catch (IOException e) {
             System.out.println("Error writing to " + filename);
         }
@@ -221,7 +194,7 @@ public class Employee extends User{
         if(this.isManager()){
             VideoGame searchGame = new VideoGame(gameTitle);
 
-            VideoGame game = gameTable.get(searchGame);
+            VideoGame game = gameCatalog.search(searchGame, new VideoGameComparator());
             
             if (game != null) {
                 game.setPrice(newPrice);
