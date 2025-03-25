@@ -193,17 +193,17 @@ public class Employee extends User{
      * @param newPrice new price to be set
      * @param newDescription new description
      * @param additionalStock the stock to add
+     * @precondition gameTitle needs to be given
      */
 
     public void updateGameByKey(String gameTitle, double newPrice, String newDescription,
      int additionalStock, String rating, String genre) {
         if(this.isManager()){
+            VideoGame searchGame = new VideoGame(gameTitle);
+            VideoGame game = gameTitles.search(searchGame, new VideoGameComparator());
 
-            
             if (game != null) {
                 if(gameTitle != null){
-                    VideoGame searchGame = new VideoGame(gameTitle);
-                    VideoGame game = gameTitles.search(searchGame, new VideoGameComparator());
                     game.setTitle(gameTitle);
                 }
                 else if(newPrice != 0.00){
