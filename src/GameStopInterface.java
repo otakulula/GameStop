@@ -86,7 +86,7 @@ public class GameStopInterface {
                 }
     
                 if( answer == 1){
-                  User guest = new Customer(email, password, true); // or should just use isAccReal and create it?
+                  User guest = new Customer(email, password, true);
                   System.out.println();
                   System.out.print("Welcome, Guest user!\n\n\n");
                   performOption(obj, guest, videoGameDatabase_Title, videoGameDatabase_Genre);
@@ -95,7 +95,7 @@ public class GameStopInterface {
                     String firstName = obj.next();
                     System.out.print("Enter your last name: ");
                     String lastName = obj.next();
-                    User newCus = new Customer(firstName, lastName, email, password, false);  // or should just use isAccReal and create it?
+                    User newCus = new Customer(firstName, lastName, email, password, false);
                     System.out.println();
                     System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
                     performOption(obj, newCus, videoGameDatabase_Title, videoGameDatabase_Genre);
@@ -109,11 +109,11 @@ public class GameStopInterface {
          * @param obj   The Scanner object to read user input.
          * @param user   The User object representing the current user.
          */
-        public static void performOption (Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){ // more params to come..
+        public static void performOption (Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             String choice = options(obj, user);
             String c = choice.toUpperCase();
             
-          if( user instanceof Customer) { // C and D,  have a check to check for guest and limit their use
+          if( user instanceof Customer) {
               if(c.equals("A")){
                 searchAGame(obj, user, titleBST, genreBST);
             } else if (c.equals("B")){
@@ -169,7 +169,7 @@ public class GameStopInterface {
             System.out.print("\nDo you want to search by Title (type 1) or genre (type 2): ");
             int answer = obj.nextInt();
 
-            if( answer == 1){ //title
+            if( answer == 1){
                 System.out.print("\nType the Title of the video game: ");
                 obj.nextLine();
                String gameName = obj.nextLine();
@@ -177,9 +177,9 @@ public class GameStopInterface {
                 VideoGame game = titleBST.search(videoGame, titleComparator);
                 System.out.println();
                 System.out.print(game);
-            } else {// genre
+            } else {
                 System.out.print("\nType the genre: ");
-
+            // THIS IS LEFT HOW DO I DO THIS
             }
             performOption(obj, user, titleBST, genreBST);
         }
@@ -198,9 +198,13 @@ public class GameStopInterface {
                 obj.nextLine();
                 String gameName = obj.nextLine();
                 System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
-                int answer = obj.nextInt();
-                System.out.print("\nEnter the date you ordred");
-                // NEED TO FINISH
+                int shipNum = obj.nextInt();
+                System.out.print("\nEnter the date you ordred it, Follow this format (Month, day): ");
+                obj.nextLine();
+                String date = obj.nextLine();
+                VideoGame videoGame = new VideoGame(gameName);
+                VideoGame game = titleBST.search(videoGame, titleComparator);
+            //    cus.placeAOrder(cus, date, shipNum, game);
             }
             performOption(obj, cus, titleBST, genreBST);
         }
@@ -243,7 +247,7 @@ public class GameStopInterface {
             System.out.print("\nDo you want to search by Order ID (type 1) or by customer's name (type 2)");
             int answer = obj.nextInt();
 
-            if( answer == 1){ // order id
+            if( answer == 1){ 
                 System.out.print("\nType the Order ID: ");
                 int orderId = obj.nextInt();
                 System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderById(orderId));
@@ -358,10 +362,10 @@ public class GameStopInterface {
         public static String options ( Scanner obj, User user){
           if(user instanceof Customer){
               System.out.print("Please select from the following options:\n\n" +
-                    "A. Search A Video Game\n" + // happening in interface
-                    "B. View All Video Games\n" + // happening in interface
-                    "C. Order A Video Game\n" + // happening customer class ( GUEST CANNOT , make them create an accoutn)
-                    "D. View Purchased Video Games\n" + // see both shipped and unshipped and happening in customer ( guest cannot)
+                    "A. Search A Video Game\n" + 
+                    "B. View All Video Games\n" + 
+                    "C. Order A Video Game\n" + 
+                    "D. View Purchased Video Games\n" +
                     "X. Exit\n\n" +
                     "Enter your choice: ");
             } else if (user instanceof Employee){ 
@@ -370,9 +374,9 @@ public class GameStopInterface {
                     System.out.print("Please select from the following options:\n\n" +
                     "A. Search A Customer's Order\n" +
                     "B. View Order With Highest Priority\n" +
-                    "C. View All Orders Sorted by Priority\n" + // show all customers organzied by priority
+                    "C. View All Orders Sorted by Priority\n" + 
                     "D. Ship A Customer's Order\n" +
-                    "E. Update The Video Game Database\n" + // like add a new game, remove a game, or update game's info
+                    "E. Update The Video Game Database\n" + 
                     "X. Exit\n\n" +
                     "Enter your choice: ");
                 } else {
@@ -393,7 +397,7 @@ public class GameStopInterface {
          * @param obj   The Scanner object to read user input.
          * @param user   The User object representing the current user.
          */
-        public static void invalidChoice(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) { // more param to come...
+        public static void invalidChoice(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) {
            if( user instanceof Customer){
                 System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
                 performOption(obj, user, titleBST, genreBST);
