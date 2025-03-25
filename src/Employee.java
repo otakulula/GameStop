@@ -11,11 +11,13 @@ import DataStructures.Heap;
 import DataStructures.HashTable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import DataStructures.LinkedList;
 
 public class Employee extends User{
 
     private boolean isManager;
-    private BST<VideoGame> gameCatalog;
+    private BST<VideoGame> gameTitles;
+    private BST<VideoGame> gameGenres;
     private HashTable<Customer> customers;
     private Heap<Order> unshippedOrders;
     
@@ -31,10 +33,12 @@ public class Employee extends User{
      */
     public Employee(String firstName, String lastName, String email,
      String password, boolean isManager, HashTable<Customer> customers, 
-     BST<VideoGame> videoGames, ArrayList<Order> allUnshippedGames) {
+     BST<VideoGame> videoGameTitles, BST<VideoGame> videoGameGenres,
+      ArrayList<Order> allUnshippedGames) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
-        this.gameCatalog = new BST<>(videoGames, new VideoGameComparator());
+        this.gameTitles = new BST<>(videoGameTitles, new VideoGameComparator());
+        this.gameGenres = new BST<>(videoGameGenres, new VideoGameComparator());
         this.customers = customers;
         this.unshippedOrders = new Heap<>(allUnshippedGames, new OrderPriorityComparator());
         
@@ -48,7 +52,8 @@ public class Employee extends User{
     public Employee(String email, String password){
         super("", "", email, password);
         this.isManager = false;        
-        this.gameCatalog = new BST<>();
+        this.gameTitles = new BST<VideoGame>();
+        this.gameGenres = new BST<VideoGame>();
         this.customers = new HashTable<>(10); 
     }
 
@@ -125,7 +130,7 @@ public class Employee extends User{
     }
     /**
      * View the next order in the priority 
-     * @return the next order in the priority
+     * 
      */
 
     public void viewHighestPriorityOrder() {
@@ -148,13 +153,13 @@ public class Employee extends User{
         if (orderToShip != null) {
             unshippedOrders.remove(orderID);
 
-            //LinkedList<Order> shipped = orderToShip.getCustomer().getShippedList();
-            //shipped.addLast(orderToShip);
+            LinkedList<Order> shipped = orderToShip.getCustomer().getShippedList();
+            shipped.addLast(orderToShip);
 
-            //LinkedList<Order> unshipped = orderToShip.getCustomer().getUnshippedList();
-            //int orderIndex = unshipped.findIndex(orderToShip);
-            //unshipped.advanceIteratorToIndex(orderIndex);
-            //unshipped.removeIterator();
+            LinkedList<Order> unshipped = orderToShip.getCustomer().getUnshippedList();
+            int orderIndex = unshipped.findIndex(orderToShip);
+            unshipped.advanceIteratorToIndex(orderIndex);
+            unshipped.removeIterator();
 
 
             System.out.println("Order " + orderID + " has been shipped.");
@@ -183,30 +188,44 @@ public class Employee extends User{
     }
 
     /**
-     *  not finished
+     * update game details
      * @param gameTitle title of the game
      * @param newPrice new price to be set
      * @param newDescription new description
      * @param additionalStock the stock to add
      */
 
-    public void updateGameByKey(String gameTitle, double newPrice, String newDescription, int additionalStock) {
+    public void updateGameByKey(String gameTitle, double newPrice, String newDescription,
+     int additionalStock, String rating, String genre) {
         if(this.isManager()){
-            VideoGame searchGame = new VideoGame(gameTitle);
 
-            VideoGame game = gameCatalog.search(searchGame, new VideoGameComparator());
             
             if (game != null) {
-                game.setPrice(newPrice);
-                game.setDescription(newDescription);
-                game.setStock(game.getStock() + additionalStock);
-
+                if(gameTitle != null){
+                    VideoGame searchGame = new VideoGame(gameTitle);
+                    VideoGame game = gameTitles.search(searchGame, new VideoGameComparator());
+                    game.setTitle(gameTitle);
+                }
+                else if(newPrice != 0.00){
+                    game.setPrice(newPrice);
+                }
+                else if(newDescription != null){
+                    game.setDescription(newDescription);
+                }  
+                else if(additionalStock != 0){
+                    game.setStock(game.getStock() + additionalStock);
+                }
+                else if(rating != null){
+                    game.setAgeRating(rating);
+                }
+                else if(genre != null){
+                    game.setGenre(genre);
+                }
             } 
             else {
             System.out.println("Game not found.");
             }
         }
-        
         
     }
 
@@ -216,7 +235,12 @@ public class Employee extends User{
  */
     public void addNewGame(VideoGame newGame) {
         if(this.isManager()){
-            gameCatalog.insert(newGame, new VideoGameComparator());
+            gameTitles.insert(newGame, new VideoGameComparator());
+            gameGenres.insert(newGame, new VideoGameComparator());
+            gameTitles.remove(newGame, new VideoGameComparator());
+            gameGenres.remove(newGame, new VideoGameComparator());
+            gameTitles.insert(newGame, new VideoGameComparator());
+            gameGenres.insert(newGame, new VideoGameComparator());
         }
     }
 /**
@@ -225,7 +249,8 @@ public class Employee extends User{
  */
     public void removeGame(String gameTitle) {
         if(this.isManager()){
-            gameCatalog.remove(new VideoGame(gameTitle), new VideoGameComparator());
+            gameTitles.remove(new VideoGame(gameTitle), new VideoGameComparator());
+            gameGenres.remove(new VideoGame(gameTitle), new VideoGameComparator());
         }
     }
     /**
