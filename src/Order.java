@@ -26,6 +26,7 @@ public class Order {
 	 * */
 	public Order(int orderID, VideoGame game, int priority) {
 		this.orderID = orderID;
+		orderContents = new LinkedList<VideoGame>();
 		this.orderContents.addLast(game);
 		this.priority = priority;
 		
