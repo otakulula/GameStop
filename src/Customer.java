@@ -327,27 +327,51 @@ public class Customer extends User {
     }
 
     /**
-     * Writes all customer data to a file.
+     * Writes all customer data to a file in the specified format.
      * 
      * @param filename The name of the file to write to.
      * @return true if successful, false otherwise.
      */
     public boolean writeToFile(String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename, true))) {
-
+            // Write customer name
             writer.println(getFirstName() + " " + getLastName());
 
+            // Write email and password
             writer.println(getEmail());
-
             writer.println(getPassword());
 
             // Write cash balance
-            writer.println(cashBalance);
+            writer.println(String.format("%.2f", cashBalance));
 
-            writer.println();
+            // Write shipped orders
+            writer.println(shippedOrders.getLength()); // Number of shipped orders
+            if (!shippedOrders.isEmpty()) {
+                shippedOrders.positionIterator();
+                while (!shippedOrders.offEnd()) {
+                    Order order = shippedOrders.getIterator();
+                    writer.println(order.getGameTitle()); // Game title
+                    writer.println(order.getPriority()); // Priority
+                    shippedOrders.advanceIterator();
+                }
+            }
 
+            // Write unshipped orders
+            writer.println(unshippedOrders.getLength()); // Number of unshipped orders
+            if (!unshippedOrders.isEmpty()) {
+                unshippedOrders.positionIterator();
+                while (!unshippedOrders.offEnd()) {
+                    Order order = unshippedOrders.getIterator();
+                    writer.println(order.getGameTitle()); // Game title
+                    writer.println(order.getPriority()); // Priority
+                    unshippedOrders.advanceIterator();
+                }
+            }
+
+            writer.println(); // Add a blank line between customers
             return true;
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error writing customer data to file", e);
             return false;
         }
     }
