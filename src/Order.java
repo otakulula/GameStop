@@ -159,6 +159,13 @@ public class Order {
 	
 	/**ADDITIONAL METHODS */
 	
+	/**
+	 * Returns the title of the first game in the order
+	 * */
+	public String getGameTitle() {
+		return orderContents.getFirst().getTitle();
+	}
+	
 	public String calculateDate(int priority) {
 		int date = priority % 10000;
 		int day = date % 100; // --> 12 or 06
