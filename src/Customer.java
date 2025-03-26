@@ -377,34 +377,44 @@ public class Customer extends User {
     }
 
     /**
-     * Returns a string representation of the Customer object.
+     * Returns a string representation of the Customer object in the specified format.
      * 
-     * @return A string containing the customer's information, owned games, and
-     *         orders.
+     * @return A string containing the customer's information and owned games.
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
         // Customer basic information
-        sb.append("Customer: ").append(getFirstName()).append(" ").append(getLastName()).append("\n");
-        sb.append("Email: ").append(getEmail()).append("\n");
-        sb.append("Cash Balance: $").append(String.format("%.2f", cashBalance)).append("\n");
-        sb.append("Guest: ").append(isGuest ? "Yes" : "No").append("\n");
+        sb.append(getFirstName()).append(" ").append(getLastName()).append("\n");
+        sb.append(getEmail()).append("\n");
+        sb.append(getPassword()).append("\n");
+        sb.append(String.format("%.2f", cashBalance)).append("\n");
 
-        // Order information
-        sb.append("\nShipped Orders (").append(shippedOrders.getLength()).append("):\n");
-        if (shippedOrders.isEmpty()) {
-            sb.append("  No shipped orders\n");
-        } else {
-            sb.append(viewShippedOrders()).append("\n");
+        // Combine shipped and unshipped orders to list all owned games
+        ArrayList<Order> allOrders = new ArrayList<>();
+        
+        // Add shipped orders
+        shippedOrders.positionIterator();
+        while (!shippedOrders.offEnd()) {
+            allOrders.add(shippedOrders.getIterator());
+            shippedOrders.advanceIterator();
         }
 
-        sb.append("\nUnshipped Orders (").append(unshippedOrders.getLength()).append("):\n");
-        if (unshippedOrders.isEmpty()) {
-            sb.append("  No pending orders\n");
-        } else {
-            sb.append(viewUnshippedOrders());
+        // Add unshipped orders
+        unshippedOrders.positionIterator();
+        while (!unshippedOrders.offEnd()) {
+            allOrders.add(unshippedOrders.getIterator());
+            unshippedOrders.advanceIterator();
+        }
+
+        // Write number of games owned
+        sb.append(allOrders.size()).append("\n");
+
+        // Write game details
+        for (Order order : allOrders) {
+            sb.append(order.getGameTitle()).append("\n");
+            sb.append(order.getPriority()).append("\n");
         }
 
         return sb.toString();
@@ -525,5 +535,14 @@ public class Customer extends User {
 
         LOGGER.log(Level.WARNING, "Order not found in unshipped orders list.");
         return false;
+    }
+
+    /**
+     * Returns the heap of pending orders.
+     * 
+     * @return The heap of pending orders.
+     */
+    public Heap<Order> getPendingOrderHeap() {
+        return pendingOrders;
     }
 }
