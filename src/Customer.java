@@ -217,60 +217,28 @@ public class Customer extends User {
     }
 
     /**
-     * Places a new order with standard shipping.
-     * 
-     * @param game The video game to order.
-     * @param date The date of the order.
-     * @return The order ID.
-     */
-    public int placeStandardOrder(VideoGame game, String date) {
-        return placeOrder(game, date, 1);
-    }
-
-    /**
-     * Places a new order with rush shipping.
-     * 
-     * @param game The video game to order.
-     * @param date The date of the order.
-     * @return The order ID.
-     */
-    public int placeRushOrder(VideoGame game, String date) {
-        return placeOrder(game, date, 2);
-    }
-
-    /**
-     * Places a new order with overnight shipping.
-     * 
-     * @param game The video game to order.
-     * @param date The date of the order.
-     * @return The order ID.
-     */
-    public int placeOvernightOrder(VideoGame game, String date) {
-        return placeOrder(game, date, 3);
-    }
-
-    /**
-     * Places a new order.
-     * 
-     * @param games         The list of video games to order.
-     * @param date          The date of the order.
-     * @param shippingSpeed The shipping speed (1=standard, 2=rush, 3=overnight).
-     * @param priority      The priority of the order (higher numbers are processed
-     *                      first).
-     * @return The order ID.
-     */
-    /**
-     * Places a new order.
+     * Places a new order with specified shipping speed.
      * 
      * @param game          The video game to order.
      * @param date          The date of the order.
-     * @param shippingSpeed The shipping speed (1=standard, 2=rush, 3=overnight).
+     * @param shippingSpeed The shipping speed:
+     *                      1 = Standard Shipping
+     *                      2 = Rush Shipping
+     *                      3 = Overnight Shipping
      * @return The order ID.
+     * @throws IllegalArgumentException if game or date is null, or shipping speed
+     *                                  is invalid
      */
     public int placeOrder(VideoGame game, String date, int shippingSpeed) {
         // Validate input
         if (game == null || date == null) {
             throw new IllegalArgumentException("Game and date cannot be null");
+        }
+
+        // Validate shipping speed
+        if (shippingSpeed < 1 || shippingSpeed > 3) {
+            throw new IllegalArgumentException(
+                    "Invalid shipping speed. Must be 1 (Standard), 2 (Rush), or 3 (Overnight).");
         }
 
         LinkedList<VideoGame> gameList = new LinkedList<>();
@@ -282,7 +250,6 @@ public class Customer extends User {
         Order newOrder = new Order(orderId, this, date, gameList, shippingSpeed);
         unshippedOrders.addLast(newOrder);
 
-        // Decrease game stock
         game.decreaseStock(1);
 
         return orderId;
