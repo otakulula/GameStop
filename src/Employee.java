@@ -140,7 +140,7 @@ public class Employee extends User{
      */
 
     public void viewHighestPriorityOrder() {
-        System.out.println(unshippedOrders.getMax());
+        System.out.println(unshippedOrders.sort().get(0));
     }
 
     /**
