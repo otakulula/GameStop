@@ -300,9 +300,9 @@ public class Order {
 	@Override
 	public String toString(){
 		StringBuilder str = new StringBuilder();
-		
-		str.append("Order ID: ").append(orderID).append("\nCustomer: ");
-		str.append(customer.getFirstName()).append(" ").append(customer.getLastName());
+		//no customer// date//game//prioritynum
+		//str.append("Order ID: ").append(orderID).append("\nCustomer: ");
+		//str.append(customer.getFirstName()).append(" ").append(customer.getLastName());
 		str.append("\nDate: ").append(date).append("\nShipping Speed: ").append(shippingSpeed);
 		str.append("\nPriority: ").append(priority).append("\nOrder Content:\n");
 		
