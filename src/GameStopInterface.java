@@ -177,6 +177,7 @@ public class GameStopInterface {
                 VideoGame game = titleBST.search(videoGame, titleComparator);
                 System.out.println();
                 System.out.print(game);
+                System.out.println();
             } else {
                 System.out.print("\nType the genre: ");
             // THIS IS LEFT HOW DO I DO THIS
@@ -185,6 +186,7 @@ public class GameStopInterface {
         }
 
         public static void viewAllGames( Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST ){
+            System.out.println();
             System.out.print(titleBST.inOrderString());
             performOption(obj, user, titleBST, genreBST);
         }
@@ -192,6 +194,7 @@ public class GameStopInterface {
         public static void orderVideoGame(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             Customer cus = (Customer) user;
             if(!cus.isGuest()){
+                System.out.println();
                 System.out.print(titleBST.inOrderString());
                 System.out.println();
                 System.out.print("\nEnter the name of video game you want to order: ");
@@ -204,7 +207,27 @@ public class GameStopInterface {
                 String date = obj.nextLine();
                 VideoGame videoGame = new VideoGame(gameName);
                 VideoGame game = titleBST.search(videoGame, titleComparator);
-            //    cus.placeAOrder(cus, date, shipNum, game);
+                 cus.placeOrder(game, date, shipNum);
+                 System.out.println();
+                 System.out.println(gameName + " is ordered!");
+                 System.out.println();
+            } else {
+                System.out.print("\nAs a Guest, you don't have an account to purchase videogames!\n"+
+                "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
+                int choice = obj.nextInt();
+
+                if(choice == 1){
+                    System.out.print("Enter your first name: ");
+                    String firstName = obj.next();
+                    System.out.print("Enter your last name: ");
+                    String lastName = obj.next();
+                    cus.setFirstName(firstName); 
+                    cus.setLastName(lastName);
+                    cus.setGuest(false);
+                    System.out.println();
+                    System.out.print("Welcome, " + cus.getFirstName() + " " + cus.getLastName() + "!\n\n\n");
+                }
+                System.out.println();
             }
             performOption(obj, cus, titleBST, genreBST);
         }
@@ -215,7 +238,7 @@ public class GameStopInterface {
                 System.out.print("\nDo you want to see your shipped (type 1) or unshipped (type 2) orders: ");
                 int answer = obj.nextInt();
                 if(answer == 1){
-                    System.out.print("\nHere is Shipped orders:\n" + cus.viewShippedOrders());
+                System.out.print("\nHere is Shipped orders:\n" + cus.viewShippedOrders());
                 } else {
                     System.out.print("\nHere is Unshipped orders:\n" + cus.viewUnshippedOrders());
                 }
@@ -244,7 +267,7 @@ public class GameStopInterface {
 
         public static void searchCusOrder(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
             Employee emp = (Employee) user;
-            System.out.print("\nDo you want to search by Order ID (type 1) or by customer's name (type 2)");
+            System.out.print("\nDo you want to search by Order ID (type 1) or by customer's name (type 2): ");
             int answer = obj.nextInt();
 
             if( answer == 1){ 
