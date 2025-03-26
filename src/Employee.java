@@ -6,6 +6,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import DataStructures.BST;
 import DataStructures.Heap;
 import DataStructures.HashTable;
@@ -174,11 +175,10 @@ public class Employee extends User{
      */
     public void writeToFile(String filename) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            //only writing the current employee
+            
             pw.println(getFirstName() + " " + getLastName());
             pw.println(getEmail());
             pw.println(getPassword());
-            //pw.println(employee id?);
             pw.println(isManager());
 
 
@@ -290,6 +290,20 @@ public class Employee extends User{
             Employee employee = (Employee)o;
              return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
         }
+    }
+    /**
+     * Override toString
+     * @return a String of employee details
+     */
+    @Override
+    public String toString() {
+        String finish = "";
+        finish += getFirstName() + " " + getLastName() + "\n";
+        finish += getEmail() + "\n";
+        finish += getPassword() + "\n";
+        finish += isManager();
+        return finish;
+
     }
 
 }
