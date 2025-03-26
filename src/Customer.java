@@ -377,9 +377,11 @@ public class Customer extends User {
     }
 
     /**
-     * Returns a string representation of the Customer object in the specified format.
+     * Returns a string representation of the Customer object in the specified
+     * format.
      * 
-     * @return A string containing the customer's information and owned games.
+     * @return A string containing the customer's information and owned/ordered
+     *         games.
      */
     @Override
     public String toString() {
@@ -391,28 +393,40 @@ public class Customer extends User {
         sb.append(getPassword()).append("\n");
         sb.append(String.format("%.2f", cashBalance)).append("\n");
 
-        // Combine shipped and unshipped orders to list all owned games
-        ArrayList<Order> allOrders = new ArrayList<>();
-        
+        // Owned Games Section
+        ArrayList<Order> ownedGames = new ArrayList<>();
+
         // Add shipped orders
         shippedOrders.positionIterator();
         while (!shippedOrders.offEnd()) {
-            allOrders.add(shippedOrders.getIterator());
+            ownedGames.add(shippedOrders.getIterator());
             shippedOrders.advanceIterator();
         }
+
+        // Write number of owned games
+        sb.append(ownedGames.size()).append("\n");
+
+        // Write owned game details
+        for (Order order : ownedGames) {
+            sb.append(order.getGameTitle()).append("\n");
+            sb.append(order.getPriority()).append("\n");
+        }
+
+        // Ordered Games Section
+        ArrayList<Order> orderedGames = new ArrayList<>();
 
         // Add unshipped orders
         unshippedOrders.positionIterator();
         while (!unshippedOrders.offEnd()) {
-            allOrders.add(unshippedOrders.getIterator());
+            orderedGames.add(unshippedOrders.getIterator());
             unshippedOrders.advanceIterator();
         }
 
-        // Write number of games owned
-        sb.append(allOrders.size()).append("\n");
+        // Write number of ordered games
+        sb.append(orderedGames.size()).append("\n");
 
-        // Write game details
-        for (Order order : allOrders) {
+        // Write ordered game details
+        for (Order order : orderedGames) {
             sb.append(order.getGameTitle()).append("\n");
             sb.append(order.getPriority()).append("\n");
         }
