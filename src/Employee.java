@@ -1,8 +1,8 @@
 /**
-  * Employee.java
-  * @author Huey Nguyen
-  * CIS 22C, Final Project
-  */
+ * Employee.java
+ * @author Huey Nguyen
+ * CIS 22C, Final Project
+ */
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,11 +21,11 @@ public class Employee extends User{
     private BST<VideoGame> gameGenres;
     private HashTable<Customer> customers;
     private Heap<Order> unshippedOrders;
-    
+
 
     /**
      * Constructs an Employee object with the given details.
-     * 
+     *
      * @param firstName The first name of the employee.
      * @param lastName The last name of the employee.
      * @param email The email address of the employee.
@@ -33,29 +33,28 @@ public class Employee extends User{
      * @param isManager Indicates if the employee is a manager.
      */
     public Employee(String firstName, String lastName, String email,
-     String password, boolean isManager, HashTable<Customer> customers, 
-     BST<VideoGame> videoGameTitles, BST<VideoGame> videoGameGenres,
-      ArrayList<Order> allUnshippedGames) {
+                    String password, boolean isManager, HashTable<Customer> customers,
+                    BST<VideoGame> videoGameTitles, BST<VideoGame> videoGameGenres,
+                    ArrayList<Order> allUnshippedGames) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
         this.gameTitles = new BST<>(videoGameTitles, new VideoGameComparator());
         this.gameGenres = new BST<>(videoGameGenres, new VideoGameComparator());
         this.customers = customers;
         this.unshippedOrders = new Heap<>(allUnshippedGames, new OrderPriorityComparator());
-        
     }
-     /**
-      * Employee constructor only email and password
-      * @param email employee email
-      * @param password employee password
-      */
+    /**
+     * Employee constructor only email and password
+     * @param email employee email
+     * @param password employee password
+     */
 
     public Employee(String email, String password){
         super("", "", email, password);
-        this.isManager = false;        
+        this.isManager = false;
         this.gameTitles = new BST<VideoGame>();
         this.gameGenres = new BST<VideoGame>();
-        this.customers = new HashTable<>(10); 
+        this.customers = new HashTable<>(10);
     }
 
     /**
@@ -64,13 +63,13 @@ public class Employee extends User{
     private static class OrderPriorityComparator implements Comparator<Order> {
         @Override
         public int compare(Order order1, Order order2) {
-            return Integer.compare(order2.getPriority(), order1.getPriority()); 
+            return Integer.compare(order2.getPriority(), order1.getPriority());
         }
     }
 
-/**
- * comparator for video game titles
- */
+    /**
+     * comparator for video game titles
+     */
     public class VideoGameComparator implements Comparator<VideoGame> {
         @Override
         public int compare(VideoGame game1, VideoGame game2) {
@@ -81,16 +80,16 @@ public class Employee extends User{
 
     /**
      * Retrieves whether the employee is a manager.
-     * 
+     *
      * @return true if the employee is a manager, false otherwise.
      */
     public boolean isManager() {
         return isManager;
     }
-    
+
     /**
      * Sets whether the employee is a manager.
-     * 
+     *
      * @param isManager true if the employee should be a manager, false otherwise.
      */
     public void setManager(boolean isManager) {
@@ -121,33 +120,34 @@ public class Employee extends User{
     public String searchOrderByCustomerName(String firstName, String lastName) {
         ArrayList<Order> ordersList = unshippedOrders.sort();
         ArrayList<Order> finish = new ArrayList<Order>();
-            for (int i = 0; i < ordersList.size(); i++) {
-                Order order = ordersList.get(i);
+        for (int i = 0; i < ordersList.size(); i++) {
+            Order order = ordersList.get(i);
 
-                if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
+            if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
                     order.getCustomer().getLastName().equalsIgnoreCase(lastName)) {
-                    finish.add(order);
-                }
+                finish.add(order);
             }
-            if(!finish.isEmpty()){
-                return finish.toString();
-            }
-            return null;
+        }
+        if(!finish.isEmpty()){
+            return finish.toString();
+        }
+        return null;
     }
     /**
-     * View the next order in the priority 
-     * 
+     * View the next order in the priority
+     *
      */
 
     public void viewHighestPriorityOrder() {
-        System.out.println(unshippedOrders.sort().get(0));
+        ArrayList<Order> sorted = unshippedOrders.sort();
+        System.out.println(sorted.get(0));
     }
 
     /**
      * Prints all the orders
      */
     public void viewAllOrders() {
-        System.out.println(unshippedOrders); 
+        System.out.println(unshippedOrders);
     }
     /**
      * ships an order out  (Need get shipped/unshipped list from customer class)
@@ -169,7 +169,7 @@ public class Employee extends User{
 
 
             System.out.println("Order " + orderID + " has been shipped.");
-        } 
+        }
         else {
             System.out.println("Order not found.");
         }
@@ -180,7 +180,7 @@ public class Employee extends User{
      */
     public void writeToFile(String filename) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            
+
             pw.println(getFirstName() + " " + getLastName());
             pw.println(getEmail());
             pw.println(getPassword());
@@ -202,7 +202,7 @@ public class Employee extends User{
      */
 
     public void updateGameByKey(String gameTitle, double newPrice, String newDescription,
-     int additionalStock, String rating, String genre) {
+                                int additionalStock, String rating, String genre) {
         if(this.isManager()){
             VideoGame searchGame = new VideoGame(gameTitle);
             VideoGame game = gameTitles.search(searchGame, new VideoGameComparator());
@@ -220,7 +220,7 @@ public class Employee extends User{
                 }
                 else if(newDescription != null){
                     game.setDescription(newDescription);
-                }  
+                }
                 else if(additionalStock != 0){
                     game.setStock(game.getStock() + additionalStock);
                 }
@@ -234,28 +234,28 @@ public class Employee extends User{
                     gameTitles.insert(game, new VideoGameComparator());
                     gameGenres.insert(game, new VideoGameComparator());
                 }
-            } 
+            }
             else {
-            System.out.println("Game not found.");
+                System.out.println("Game not found.");
             }
         }
-        
+
     }
 
-/**
- * adds new game
- * @param newGame new game to be added
- */
+    /**
+     * adds new game
+     * @param newGame new game to be added
+     */
     public void addNewGame(VideoGame newGame) {
         if(this.isManager()){
             gameTitles.insert(newGame, new VideoGameComparator());
             gameGenres.insert(newGame, new VideoGameComparator());
         }
     }
-/**
- * removes a game
- * @param gameTitle
- */
+    /**
+     * removes a game
+     * @param gameTitle
+     */
     public void removeGame(String gameTitle) {
         if(this.isManager()){
             gameTitles.remove(new VideoGame(gameTitle), new VideoGameComparator());
@@ -268,7 +268,7 @@ public class Employee extends User{
      * Key = title
      * @return the hash code
      */
- @Override
+    @Override
     public int hashCode() {
         int sum = 0;
         String key = getEmail();
@@ -293,7 +293,7 @@ public class Employee extends User{
             return false;
         } else {
             Employee employee = (Employee)o;
-             return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
+            return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
         }
     }
     /**
