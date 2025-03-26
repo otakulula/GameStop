@@ -178,11 +178,11 @@ public class Order {
 		} else if(month == 2) {
 			monthStr += "February";
 		} else if(month == 3) {
-			monthStr += "May";
+			monthStr += "March";
 		} else if(month == 4) {
 			monthStr += "April";
 		} else if(month == 5) {
-			monthStr += "March";
+			monthStr += "May";
 		} else if(month == 6) {
 			monthStr += "June";
 		} else if(month == 7) {
