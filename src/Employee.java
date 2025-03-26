@@ -118,15 +118,19 @@ public class Employee extends User{
      * @return order we are looking for
      */
 
-    public Order searchOrderByCustomerName(String firstName, String lastName) {
+    public String searchOrderByCustomerName(String firstName, String lastName) {
         ArrayList<Order> ordersList = unshippedOrders.sort();
-            for (int i = 1; i < ordersList.size(); i++) {
+        ArrayList<Order> finish = new ArrayList<Order>();
+            for (int i = 0; i < ordersList.size(); i++) {
                 Order order = ordersList.get(i);
 
                 if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
                     order.getCustomer().getLastName().equalsIgnoreCase(lastName)) {
-                    return order;
+                    finish.add(order);
                 }
+            }
+            if(!finish.isEmpty()){
+                return finish.toString();
             }
             return null;
     }
