@@ -303,14 +303,19 @@ public class Order {
 		//no customer// date//game//prioritynum
 		//str.append("Order ID: ").append(orderID).append("\nCustomer: ");
 		//str.append(customer.getFirstName()).append(" ").append(customer.getLastName());
-		str.append("\nDate: ").append(date).append("\nShipping Speed: ").append(shippingSpeed);
-		str.append("\nPriority: ").append(priority).append("\nOrder Content:\n");
 		
-		orderContents.positionIterator();
-		for(int i = 0; i < orderContents.getLength(); i++) {
+		str.append(orderContents.getFirst()).append("\n");
+		str.append("\nDate: ").append(date);
+		str.append("\nPriority: ").append(priority);
+		
+		//orderContents.positionIterator();
+		
+		/*for(int i = 0; i < orderContents.getLength(); i++) {
 			str.append(i).append(". ").append(orderContents.getIterator().getTitle()).append("\n");
 			orderContents.advanceIterator();
-		}
+		}*/
+		
+		
 		return str.toString();
     }
 }
