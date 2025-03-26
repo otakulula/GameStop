@@ -205,6 +205,10 @@ public class Employee extends User{
             if (game != null) {
                 if(gameTitle != null){
                     game.setTitle(gameTitle);
+                    gameTitles.remove(game, new VideoGameComparator());
+                    gameGenres.remove(game, new VideoGameComparator());
+                    gameTitles.insert(game, new VideoGameComparator());
+                    gameGenres.insert(game, new VideoGameComparator());
                 }
                 else if(newPrice != 0.00){
                     game.setPrice(newPrice);
@@ -220,6 +224,10 @@ public class Employee extends User{
                 }
                 else if(genre != null){
                     game.setGenre(genre);
+                    gameTitles.remove(game, new VideoGameComparator());
+                    gameGenres.remove(game, new VideoGameComparator());
+                    gameTitles.insert(game, new VideoGameComparator());
+                    gameGenres.insert(game, new VideoGameComparator());
                 }
             } 
             else {
@@ -235,10 +243,6 @@ public class Employee extends User{
  */
     public void addNewGame(VideoGame newGame) {
         if(this.isManager()){
-            gameTitles.insert(newGame, new VideoGameComparator());
-            gameGenres.insert(newGame, new VideoGameComparator());
-            gameTitles.remove(newGame, new VideoGameComparator());
-            gameGenres.remove(newGame, new VideoGameComparator());
             gameTitles.insert(newGame, new VideoGameComparator());
             gameGenres.insert(newGame, new VideoGameComparator());
         }
