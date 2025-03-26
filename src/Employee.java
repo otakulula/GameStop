@@ -120,8 +120,9 @@ public class Employee extends User{
 
     public Order searchOrderByCustomerName(String firstName, String lastName) {
         ArrayList<Order> ordersList = unshippedOrders.sort();
-            for (int i = 0; i < ordersList.size(); i++) {
+            for (int i = 1; i < ordersList.size(); i++) {
                 Order order = ordersList.get(i);
+
                 if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
                     order.getCustomer().getLastName().equalsIgnoreCase(lastName)) {
                     return order;
@@ -301,7 +302,7 @@ public class Employee extends User{
         finish += getFirstName() + " " + getLastName() + "\n";
         finish += getEmail() + "\n";
         finish += getPassword() + "\n";
-        finish += isManager();
+        finish += isManager() + "\n";
         return finish;
 
     }
