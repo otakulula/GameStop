@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import DataStructures.LinkedList;
 import DataStructures.Heap;
 
@@ -18,6 +20,8 @@ public class Customer extends User {
     private Heap<Order> pendingOrders;
     private double cashBalance;
     private boolean isGuest;
+
+    private static final Logger LOGGER = Logger.getLogger(Customer.class.getName());
 
     /**
      * Constructor with comprehensive customer details including order information.
@@ -183,20 +187,29 @@ public class Customer extends User {
     };
 
     /**
-     * Combines unshipped orders into a single heap for easy access.
+     * Consolidates unshipped orders with improved error handling.
      * 
      * @return A Heap containing only unshipped orders.
      */
     public Heap<Order> consolidateOrders() {
-        
         // Create an ArrayList to hold unshipped orders
         ArrayList<Order> unshippedOrdersList = new ArrayList<>();
 
+        // Add debug logging for empty list
+        if (this.unshippedOrders.isEmpty()) {
+            LOGGER.log(Level.INFO, "No unshipped orders to consolidate.");
+            return new Heap<>(unshippedOrdersList, orderPriorityComparator);
+        }
+
         // Add all unshipped orders
         this.unshippedOrders.positionIterator();
-        while (!this.unshippedOrders.offEnd()) {
-            unshippedOrdersList.add(this.unshippedOrders.getIterator());
-            this.unshippedOrders.advanceIterator();
+        try {
+            while (!this.unshippedOrders.offEnd()) {
+                unshippedOrdersList.add(this.unshippedOrders.getIterator());
+                this.unshippedOrders.advanceIterator();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error consolidating orders", e);
         }
 
         // Create and return a new Heap with only unshipped orders
@@ -276,43 +289,53 @@ public class Customer extends User {
     }
 
     /**
-     * Processes the highest priority order, marking it as shipped.
+     * Processes the highest priority order with enhanced error handling.
      * 
      * @return The order that was processed, or null if no orders to process.
      */
     public Order processNextOrder() {
         if (unshippedOrders.getLength() == 0) {
+            LOGGER.log(Level.INFO, "No unshipped orders to process.");
             return null;
         }
 
-        // Find and remove the highest priority order
-        Order highestPriorityOrder = null;
-        int highestPriority = Integer.MIN_VALUE;
-        int highestPriorityIndex = -1;
+        try {
+            // Find and remove the highest priority order
+            Order highestPriorityOrder = null;
+            int highestPriority = Integer.MIN_VALUE;
+            int highestPriorityIndex = -1;
 
-        unshippedOrders.positionIterator();
-        for (int i = 0; i < unshippedOrders.getLength(); i++) {
-            Order currentOrder = unshippedOrders.getIterator();
-            if (currentOrder.getPriority() > highestPriority) {
-                highestPriority = currentOrder.getPriority();
-                highestPriorityOrder = currentOrder;
-                highestPriorityIndex = i;
-            }
-            unshippedOrders.advanceIterator();
-        }
-
-        // Remove the highest priority order
-        if (highestPriorityOrder != null) {
-            // Reset iterator and remove the order
             unshippedOrders.positionIterator();
-            for (int i = 0; i < highestPriorityIndex; i++) {
+            for (int i = 0; i < unshippedOrders.getLength(); i++) {
+                Order currentOrder = unshippedOrders.getIterator();
+                if (currentOrder == null) {
+                    LOGGER.log(Level.WARNING, "Null order encountered at index " + i);
+                    continue;
+                }
+
+                if (currentOrder.getPriority() > highestPriority) {
+                    highestPriority = currentOrder.getPriority();
+                    highestPriorityOrder = currentOrder;
+                    highestPriorityIndex = i;
+                }
                 unshippedOrders.advanceIterator();
             }
-            unshippedOrders.removeIterator();
 
-            // Add to shipped orders
-            shippedOrders.addLast(highestPriorityOrder);
-            return highestPriorityOrder;
+            // Remove the highest priority order
+            if (highestPriorityOrder != null) {
+                // Reset iterator and remove the order
+                unshippedOrders.positionIterator();
+                for (int i = 0; i < highestPriorityIndex; i++) {
+                    unshippedOrders.advanceIterator();
+                }
+                unshippedOrders.removeIterator();
+
+                // Add to shipped orders
+                shippedOrders.addLast(highestPriorityOrder);
+                return highestPriorityOrder;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing next order", e);
         }
 
         return null;
@@ -445,20 +468,32 @@ public class Customer extends User {
     }
 
     /**
-     * Removes a specific order from the shipped orders list.
+     * Removes a specific order from the shipped orders list with debug logging.
      * 
      * @param order The order to remove from shipped orders.
      * @return true if the order was successfully removed, false otherwise.
      */
     public boolean removeShippedOrder(Order order) {
-        this.shippedOrders.positionIterator();
-        while (!this.shippedOrders.offEnd()) {
-            if (this.shippedOrders.getIterator().equals(order)) {
-                this.shippedOrders.removeIterator();
-                return true;
-            }
-            this.shippedOrders.advanceIterator();
+        if (this.shippedOrders.isEmpty()) {
+            LOGGER.log(Level.INFO, "Cannot remove order: shipped orders list is empty.");
+            return false;
         }
+
+        this.shippedOrders.positionIterator();
+        try {
+            while (!this.shippedOrders.offEnd()) {
+                if (this.shippedOrders.getIterator().equals(order)) {
+                    this.shippedOrders.removeIterator();
+                    LOGGER.log(Level.INFO, "Order successfully removed from shipped orders.");
+                    return true;
+                }
+                this.shippedOrders.advanceIterator();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error removing shipped order", e);
+        }
+
+        LOGGER.log(Level.WARNING, "Order not found in shipped orders list.");
         return false;
     }
 
@@ -472,20 +507,32 @@ public class Customer extends User {
     }
 
     /**
-     * Removes a specific order from the unshipped orders list.
+     * Removes a specific order from the unshipped orders list with debug logging.
      * 
      * @param order The order to remove from unshipped orders.
      * @return true if the order was successfully removed, false otherwise.
      */
     public boolean removeUnshippedOrder(Order order) {
-        this.unshippedOrders.positionIterator();
-        while (!this.unshippedOrders.offEnd()) {
-            if (this.unshippedOrders.getIterator().equals(order)) {
-                this.unshippedOrders.removeIterator();
-                return true;
-            }
-            this.unshippedOrders.advanceIterator();
+        if (this.unshippedOrders.isEmpty()) {
+            LOGGER.log(Level.INFO, "Cannot remove order: unshipped orders list is empty.");
+            return false;
         }
+
+        this.unshippedOrders.positionIterator();
+        try {
+            while (!this.unshippedOrders.offEnd()) {
+                if (this.unshippedOrders.getIterator().equals(order)) {
+                    this.unshippedOrders.removeIterator();
+                    LOGGER.log(Level.INFO, "Order successfully removed from unshipped orders.");
+                    return true;
+                }
+                this.unshippedOrders.advanceIterator();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error removing unshipped order", e);
+        }
+
+        LOGGER.log(Level.WARNING, "Order not found in unshipped orders list.");
         return false;
     }
 }
