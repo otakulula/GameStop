@@ -304,7 +304,7 @@ public class Order {
 		//str.append("Order ID: ").append(orderID).append("\nCustomer: ");
 		//str.append(customer.getFirstName()).append(" ").append(customer.getLastName());
 		
-		str.append(orderContents.getFirst()).append("\n");
+		str.append(orderContents.getFirst().getTitle()).append("\n");
 		str.append("\nDate: ").append(date);
 		str.append("\nPriority: ").append(priority);
 		
