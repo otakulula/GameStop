@@ -280,7 +280,7 @@ public class GameStopInterface {
                 System.out.println();
             } else {
                 if( cus.getCashBalance() < game.getPrice()){
-                    System.out.print("\nYou don't have enough cash\nYou have $" + cus.getCashBalance() + "\nWhile the video game costs: $" + game.getPrice());
+                    System.out.print("\nYou don't have enough cash\nYou have $" + (int) cus.getCashBalance() + "\nWhile the video game costs: $" + game.getPrice());
                     System.out.print("\nWant to add cash --> Yes (type 1) or No (type 2): ");
                     int choice = obj.nextInt();
 
@@ -288,16 +288,19 @@ public class GameStopInterface {
                         System.out.print("\nEnter the amount of cash to add to buy game: $");
                         double moreCash = obj.nextDouble();
                         cus.setCashBalance(moreCash);
-                        System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
-                        int shipNum = obj.nextInt();
-                        System.out.print("\nEnter the date you ordered it, Follow this format --> Month, day: ");
-                        obj.nextLine();
-                        String date = obj.nextLine();
-                        cus.placeOrder(game, date, shipNum);
-                        cus.setCashBalance(cus.getCashBalance() - game.getPrice());
-                        System.out.println();
-                        System.out.println(gameName + " is ordered!");
-                        System.out.println();
+
+                        if(cus.getCashBalance() >= game.getPrice()) {
+                            System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
+                            int shipNum = obj.nextInt();
+                            System.out.print("\nEnter the date you ordered it, Follow this format --> Month, day: ");
+                            obj.nextLine();
+                            String date = obj.nextLine();
+                            cus.placeOrder(game, date, shipNum);
+                            cus.setCashBalance(cus.getCashBalance() - game.getPrice());
+                            System.out.println();
+                            System.out.println(gameName + " is ordered!");
+                            System.out.println();
+                        }
                     }
                 } else {
                     System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
@@ -315,7 +318,7 @@ public class GameStopInterface {
             }
         } else {
             System.out.print("\nAs a Guest, you don't have an account to purchase video games!\n"+
-                    "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
+                    "Do you want to create an account\nYes (type 1)\nNo (type 2)\n\nEnter a number: ");
             int choice = obj.nextInt();
 
             while (choice != 1 && choice != 2 ){
