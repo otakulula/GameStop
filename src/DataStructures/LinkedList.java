@@ -526,6 +526,7 @@ public class LinkedList<T> {
         if(index >= this.getLength() || index < 0){
             throw new IndexOutOfBoundsException("advanceIteratorToIndex: the index is out of bounds");
         }
+
         for (int i = 0; i < index; i++) {
             advanceIterator();
         }

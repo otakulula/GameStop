@@ -294,7 +294,7 @@ public class HashTable<T> {
             list.positionIterator();
             if( list.getLength() > 0) {
                 for (int j = 0; j < list.getLength(); j++) {
-                    result += list.getIterator() + " ";
+                    result += list.getIterator() + "";
                     list.advanceIterator();
                 }
                 result += "\n";

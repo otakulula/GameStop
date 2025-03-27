@@ -3,10 +3,6 @@
  * @author Stefano Pinna Segovia
  * CIS 22C, Final Project
  */
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.logging.Level;
@@ -25,7 +21,7 @@ public class Customer extends User {
 
     /**
      * Constructor with comprehensive customer details including order information.
-     * 
+     *
      * @param firstName           The first name of the customer.
      * @param lastName            The last name of the customer.
      * @param email               The email address of the customer.
@@ -37,8 +33,8 @@ public class Customer extends User {
      * @param unshippedVideoGames The list of unshipped video game orders.
      */
     public Customer(String firstName, String lastName, String email, String password,
-            double cashBalance, int numOfShipped, ArrayList<Order> shippedVideoGames,
-            int numOfUnshipped, ArrayList<Order> unshippedVideoGames) {
+                    double cashBalance, int numOfShipped, ArrayList<Order> shippedVideoGames,
+                    int numOfUnshipped, ArrayList<Order> unshippedVideoGames, boolean isGuest) {
         super(firstName, lastName, email, password);
 
         this.shippedOrders = new LinkedList<>();
@@ -47,7 +43,7 @@ public class Customer extends User {
                 orderPriorityComparator);
 
         this.cashBalance = cashBalance;
-        this.isGuest = false;
+        this.isGuest = isGuest;
 
         // Add shipped orders to shippedOrders LinkedList
         if (shippedVideoGames != null) {
@@ -66,12 +62,12 @@ public class Customer extends User {
 
     /**
      * Constructor for Customer with only email and password.
-     * 
+     *
      * @param email    The email address of the customer.
      * @param password The password for the customer.
      */
     public Customer(String email, String password) {
-        super("", "", email, password);
+        super("","", email, password);
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
@@ -81,13 +77,13 @@ public class Customer extends User {
 
     /**
      * Constructor for Customer with isGuest parameter.
-     * 
+     *
      * @param email    The email address of the customer.
      * @param password The password for the customer.
      * @param isGuest  Whether the customer is a guest.
      */
     public Customer(String email, String password, boolean isGuest) {
-        super("", "", email, password);
+        super("NO FIRST NAME GIVEN", "NO LAST NAME GIVEN", email, password);
         this.shippedOrders = new LinkedList<>();
         this.unshippedOrders = new LinkedList<>();
         this.pendingOrders = new Heap<>(new ArrayList<Order>(), orderPriorityComparator);
@@ -97,7 +93,7 @@ public class Customer extends User {
 
     /**
      * Constructor for Customer with isGuest parameter and names.
-     * 
+     *
      * @param firstName The first name of the customer.
      * @param lastName  The last name of the customer.
      * @param email     The email address of the customer.
@@ -115,7 +111,7 @@ public class Customer extends User {
 
     /**
      * Retrieves the list of shipped orders.
-     * 
+     *
      * @return A LinkedList of shipped orders.
      */
     public LinkedList<Order> getShippedList() {
@@ -124,7 +120,7 @@ public class Customer extends User {
 
     /**
      * Retrieves the list of unshipped orders.
-     * 
+     *
      * @return A LinkedList of unshipped orders.
      */
     public LinkedList<Order> getUnshippedList() {
@@ -133,7 +129,7 @@ public class Customer extends User {
 
     /**
      * Retrieves the heap of pending orders.
-     * 
+     *
      * @return A Heap of pending orders.
      */
     public Heap<Order> getPendingOrders() {
@@ -142,7 +138,7 @@ public class Customer extends User {
 
     /**
      * Gets the cash balance.
-     * 
+     *
      * @return The customer's cash balance.
      */
     public double getCashBalance() {
@@ -151,7 +147,7 @@ public class Customer extends User {
 
     /**
      * Sets the cash balance.
-     * 
+     *
      * @param balance The balance to set.
      */
     public void setCashBalance(double balance) {
@@ -160,7 +156,7 @@ public class Customer extends User {
 
     /**
      * Gets whether the customer is a guest.
-     * 
+     *
      * @return True if the customer is a guest, false otherwise.
      */
     public boolean isGuest() {
@@ -169,7 +165,7 @@ public class Customer extends User {
 
     /**
      * Sets whether the customer is a guest.
-     * 
+     *
      * @param isGuest True if the customer is a guest, false otherwise.
      */
     public void setGuest(boolean isGuest) {
@@ -188,7 +184,7 @@ public class Customer extends User {
 
     /**
      * Consolidates unshipped orders with improved error handling.
-     * 
+     *
      * @return A Heap containing only unshipped orders.
      */
     public Heap<Order> consolidateOrders() {
@@ -218,7 +214,7 @@ public class Customer extends User {
 
     /**
      * Places a new order with specified shipping speed.
-     * 
+     *
      * @param game          The video game to order.
      * @param date          The date of the order.
      * @param shippingSpeed The shipping speed:
@@ -244,20 +240,27 @@ public class Customer extends User {
         LinkedList<VideoGame> gameList = new LinkedList<>();
         gameList.addLast(game);
 
-        // Use the current size of unshippedOrders + 1 as the order ID
-        int orderId = unshippedOrders.getLength() + 1;
 
-        Order newOrder = new Order(orderId, this, date, gameList, shippingSpeed);
+
+
+            int sum = 0;
+            String key = this.getFirstName() + " " + this.getLastName() + this.getEmail() + this.getPassword() + game.getTitle();
+            for(int j = 0; j < key.length(); j++){
+                sum += key.charAt(j);
+            }
+            int orderID = sum;
+
+        Order newOrder = new Order(orderID, this, date, gameList, shippingSpeed);
         unshippedOrders.addLast(newOrder);
 
         game.decreaseStock(1);
 
-        return orderId;
+        return orderID;
     }
 
     /**
      * Processes the highest priority order with enhanced error handling.
-     * 
+     *
      * @return The order that was processed, or null if no orders to process.
      */
     public Order processNextOrder() {
@@ -310,76 +313,32 @@ public class Customer extends User {
 
     /**
      * Gets a list of all shipped orders.
-     * 
+     *
      * @return A string representation of all shipped orders.
      */
     public String viewShippedOrders() {
-        return shippedOrders.toString();
+        if(shippedOrders.isEmpty()){
+            return "You don't have any shipped orders!\n\n";
+        }
+        return "\nHere is Shipped orders:\n" + shippedOrders.toString();
     }
 
     /**
      * Gets a list of all unshipped orders.
-     * 
+     *
      * @return A string representation of all unshipped orders.
      */
     public String viewUnshippedOrders() {
-        return unshippedOrders.toString();
-    }
-
-    /**
-     * Writes all customer data to a file in the specified format.
-     * 
-     * @param filename The name of the file to write to.
-     * @return true if successful, false otherwise.
-     */
-    public boolean writeToFile(String filename) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filename, true))) {
-            // Write customer name
-            writer.println(getFirstName() + " " + getLastName());
-
-            // Write email and password
-            writer.println(getEmail());
-            writer.println(getPassword());
-
-            // Write cash balance
-            writer.println(String.format("%.2f", cashBalance));
-
-            // Write shipped orders
-            writer.println(shippedOrders.getLength()); // Number of shipped orders
-            if (!shippedOrders.isEmpty()) {
-                shippedOrders.positionIterator();
-                while (!shippedOrders.offEnd()) {
-                    Order order = shippedOrders.getIterator();
-                    writer.println(order.getGameTitle()); // Game title
-                    writer.println(order.getPriority()); // Priority
-                    shippedOrders.advanceIterator();
-                }
-            }
-
-            // Write unshipped orders
-            writer.println(unshippedOrders.getLength()); // Number of unshipped orders
-            if (!unshippedOrders.isEmpty()) {
-                unshippedOrders.positionIterator();
-                while (!unshippedOrders.offEnd()) {
-                    Order order = unshippedOrders.getIterator();
-                    writer.println(order.getGameTitle()); // Game title
-                    writer.println(order.getPriority()); // Priority
-                    unshippedOrders.advanceIterator();
-                }
-            }
-
-            writer.println(); // Add a blank line between customers
-            return true;
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error writing customer data to file", e);
-            return false;
+        if(unshippedOrders.isEmpty()){
+            return "You don't have any unshipped orders!\n\n";
         }
+        return "\nHere is Unshipped orders:\n" + unshippedOrders.toString();
     }
 
     /**
      * Returns a string representation of the Customer object in the specified
      * format.
-     * 
+     *
      * @return A string containing the customer's information and owned/ordered
      *         games.
      */
@@ -431,13 +390,15 @@ public class Customer extends User {
             sb.append(order.getPriority()).append("\n");
         }
 
+        sb.append(isGuest).append("\n");
+
         return sb.toString();
     }
 
     /**
      * Returns a consistent hash code for each Customer email + password
      * by summing the Unicode values of each character in the key
-     * 
+     *
      * @return the hash code
      */
     @Override
@@ -453,7 +414,7 @@ public class Customer extends User {
 
     /**
      * Overrides the equals method to compare Customers based on email and password.
-     * 
+     *
      * @param obj The object to compare with this Customer.
      * @return true if the objects are equal, false otherwise.
      */
@@ -475,7 +436,7 @@ public class Customer extends User {
 
     /**
      * Adds an order to the shipped orders list.
-     * 
+     *
      * @param order The order to add to shipped orders.
      */
     public void addShippedOrder(Order order) {
@@ -484,7 +445,7 @@ public class Customer extends User {
 
     /**
      * Removes a specific order from the shipped orders list with debug logging.
-     * 
+     *
      * @param order The order to remove from shipped orders.
      * @return true if the order was successfully removed, false otherwise.
      */
@@ -514,7 +475,7 @@ public class Customer extends User {
 
     /**
      * Adds an order to the unshipped orders list.
-     * 
+     *
      * @param order The order to add to unshipped orders.
      */
     public void addUnshippedOrder(Order order) {
@@ -523,7 +484,7 @@ public class Customer extends User {
 
     /**
      * Removes a specific order from the unshipped orders list with debug logging.
-     * 
+     *
      * @param order The order to remove from unshipped orders.
      * @return true if the order was successfully removed, false otherwise.
      */
@@ -553,7 +514,7 @@ public class Customer extends User {
 
     /**
      * Returns the heap of pending orders.
-     * 
+     *
      * @return The heap of pending orders.
      */
     public Heap<Order> getPendingOrderHeap() {

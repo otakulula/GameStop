@@ -1,10 +1,8 @@
 import DataStructures.BST;
 import DataStructures.HashTable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Scanner;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Compares two VideoGame objects by title.
@@ -38,18 +36,25 @@ class GenreComparator implements Comparator<VideoGame>{
     }
 }
 
+
+
 public class GameStopInterface {
 
     static Comparator<VideoGame> titleComparator = new TitleComparator();
     static  Comparator<VideoGame> genreComparator = new GenreComparator();
+    static  final int NUM_CUSTOMERS = 100;
+    static  final int NUM_EMPLOYEE = 4;
+
 
     public static void main(String[] args) throws Exception {
-        final int NUM_CUSTOMERS = 100;
-        final int NUM_EMPLOYEE = 4;
+//        File cusFile = new File("DataBases/customers.txt");
+//        File empFile = new File("DataBases/employees.txt");
+//        File vgFile = new File("DataBases/videoGames.txt");
 
-        File custFile = new File("DataBases/customers.txt");
-        File empFile = new File("DataBases/employees.txt");
-        File vgFile = new File("DataBases/videoGames.txt");
+        File cusFile = new File("src/scuffedCustomers.txt");
+       File empFile = new File("src/UpdatedEmp.txt");
+          File vgFile = new File("src/VideoGameUpdated.txt");
+
 
         HashTable<Customer> cuHashTable = new HashTable<>(NUM_CUSTOMERS);
         HashTable<Employee> empHashTable = new HashTable<>(NUM_EMPLOYEE * 3);
@@ -58,8 +63,9 @@ public class GameStopInterface {
         BST<VideoGame> videoGameDatabase_Genre = new BST<>();
 
         fillVideoGames(vgFile ,videoGameDatabase_Title, videoGameDatabase_Genre);
-        fillCustomers(custFile, cuHashTable, videoGameDatabase_Title, allUnshippedOrders);
+        fillCustomers(cusFile, cuHashTable, videoGameDatabase_Title, allUnshippedOrders);
         fillEmployee(empFile, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, cuHashTable, allUnshippedOrders);
+
 
         Scanner obj = new Scanner(System.in);
         System.out.println("Welcome to Game Stop!");
@@ -71,10 +77,10 @@ public class GameStopInterface {
 
         if(isAccReal instanceof Customer){
             System.out.print("\nWelcome, " + isAccReal.getFirstName() + " " + isAccReal.getLastName() + "!\n\n\n");
-            performOption(obj, isAccReal, videoGameDatabase_Title, videoGameDatabase_Genre);
+            performOption(obj, isAccReal, cuHashTable, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, vgFile);
         } else if ( isAccReal instanceof Employee) {
             System.out.print("\nWelcome, " + isAccReal.getFirstName() + " " + isAccReal.getLastName() + "!\n\n\n");
-            performOption(obj, isAccReal, videoGameDatabase_Title, videoGameDatabase_Genre);
+            performOption(obj, isAccReal, cuHashTable, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, vgFile);
         } else {
             System.out.print("\nWe don't have your account on file...\n\n" +
                     "To remain as Guest type 1 or To create an account type 2: ");
@@ -86,19 +92,21 @@ public class GameStopInterface {
             }
 
             if( answer == 1){
-                User guest = new Customer(email, password, true);
+                Customer guest = new Customer(email, password, true);
+                cuHashTable.add(guest);
                 System.out.println();
                 System.out.print("Welcome, Guest user!\n\n\n");
-                performOption(obj, guest, videoGameDatabase_Title, videoGameDatabase_Genre);
+                performOption(obj, guest, cuHashTable, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, vgFile);
             } else {
                 System.out.print("Enter your first name: ");
                 String firstName = obj.next();
                 System.out.print("Enter your last name: ");
                 String lastName = obj.next();
-                User newCus = new Customer(firstName, lastName, email, password, false);
+                Customer newCus = new Customer(firstName, lastName, email, password, false);
+                cuHashTable.add(newCus);
                 System.out.println();
                 System.out.print("Welcome, " + newCus.getFirstName() + " " + newCus.getLastName() + "!\n\n\n");
-                performOption(obj, newCus, videoGameDatabase_Title, videoGameDatabase_Genre);
+                performOption(obj, newCus, cuHashTable, empHashTable, videoGameDatabase_Title, videoGameDatabase_Genre, vgFile);
             }
         }
     }
@@ -109,65 +117,69 @@ public class GameStopInterface {
      * @param obj   The Scanner object to read user input.
      * @param user   The User object representing the current user.
      */
-    public static void performOption (Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void performOption (Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         String choice = options(obj, user);
         String c = choice.toUpperCase();
 
         if( user instanceof Customer) {
             if(c.equals("A")){
-                searchAGame(obj, user, titleBST, genreBST);
+                searchAGame(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);  //works NOT THE GENRE
             } else if (c.equals("B")){
-                viewAllGames(obj, user, titleBST, genreBST);
+                viewAllGames(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works
             } else if (c.equals("C")){
-                orderVideoGame(obj, user, titleBST, genreBST);
+                orderVideoGame(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
             } else if (c.equals("D")){
-                viewPurchasedGames(obj, user, titleBST, genreBST);
+                viewPurchasedGames(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works (scuffed)
             } else if ( c.equals("X")){
-                exitOptionX(obj);
+                exitOptionX(obj, user, empHashTable, titleBST, cuHashTable);
             } else {
-                invalidChoice(obj, user, titleBST, genreBST);
+                invalidChoice(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
             }
         } else if( user instanceof Employee ) {
             Employee emp = (Employee) user;
             if( emp.isManager()){
                 if(c.equals("A")){
-                    searchCusOrder(obj, user, titleBST, genreBST);
+                    searchCusOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works
                 } else if (c.equals("B")){
-                    highestPriorityOrder(obj, user, titleBST, genreBST);
+                    highestPriorityOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); //works
                 } else if (c.equals("C")){
-                    viewAllOrders(obj, user, titleBST, genreBST);
+                    viewAllOrders(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works almost , needs to be sorted!
                 } else if (c.equals("D")){
-                    shipOrder(obj, user, titleBST, genreBST);
+                    shipOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // need to be fixed
                 } else if ( c.equals("E")){
-                    updateVideoGameDB(obj, user, titleBST, genreBST);
+                    updateVideoGameDB(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // maybe
                 } else if ( c.equals("X")) {
-                    exitOptionX(obj);
+                    exitOptionX(obj,user ,empHashTable, titleBST, cuHashTable);
                 } else{
-                    invalidChoice(obj, user, titleBST, genreBST);
+                    invalidChoice(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // need to be fixed
                 }
             } else {
                 if(c.equals("A")){
-                    searchCusOrder(obj, user, titleBST, genreBST);
+                    searchCusOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works
                 } else if (c.equals("B")){
-                    highestPriorityOrder(obj, user, titleBST, genreBST);
+                    highestPriorityOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); //works
                 } else if (c.equals("C")){
-                    viewAllOrders(obj, user, titleBST, genreBST);
+                    viewAllOrders(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // works almost , needs to be sorted!
                 } else if (c.equals("D")){
-                    shipOrder(obj, user, titleBST, genreBST);
+                    shipOrder(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile); // need to be fixed
                 } else if ( c.equals("X")){
-                    exitOptionX(obj);
+                    exitOptionX(obj, user, empHashTable, titleBST, cuHashTable);
                 } else {
-                    invalidChoice(obj, user, titleBST, genreBST);
+                    invalidChoice(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
                 }
             }
         }
     }
 
     /* Customer Options: */
-
-    public static void searchAGame ( Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void searchAGame ( Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         System.out.print("\nDo you want to search by Title (type 1) or genre (type 2): ");
         int answer = obj.nextInt();
+
+        while (answer != 1 && answer != 2  ){
+            System.out.print("\nInvalid answer\n" + "Enter 1 for Title or 2 for Genre: ");
+            answer = obj.nextInt();
+        }
 
         if( answer == 1){
             System.out.print("\nType the Title of the video game: ");
@@ -176,38 +188,80 @@ public class GameStopInterface {
             VideoGame videoGame = new VideoGame(gameName);
             VideoGame game = titleBST.search(videoGame, titleComparator);
             System.out.println();
-            System.out.print(game);
+            if (game == null) {
+                System.out.print(gameName + " doesn't exist!");
+                System.out.println();
+            } else {
+                System.out.print(game.getTitle() + "\nPrice: $" + game.getPrice() + "\nDescription: " + game.getDescription() + "\nStock: "
+                        + game.getStock() + "\nAge Rating: " + game.getAgeRating() + "\nGenre: " + game.getGenre() + "\n");
+            }
             System.out.println();
         } else {
             System.out.print("\nType the genre: ");
             String genre = obj.next();
-            BST<VideoGame> copyGenre = new BST<>(genreBST, genreComparator);
-//            VideoGame game = new VideoGame(genre, 0);
-//            VideoGame g = genreBST.search(game, genreComparator);
-//            ArrayList<VideoGame> temp = new ArrayList<>();
-//            boolean done = true;
-//            while ( done){
-//                VideoGame g = new VideoGame(genre, 0);
-//                VideoGame g2 =  genreBST.search(g, genreComparator);
-//                temp.add(g2);
-//                copyGenre.remove(g2, genreComparator);
-//                if( copyGenre.search(g, genreComparator) == null){
-//                    done = false;
-//                }
-//            }
-//            System.out.println(temp);
-            // THIS IS LEFT HOW DO I DO THIS
+
+            ArrayList<VideoGame> gamesInGenre = new ArrayList<>();
+
+
+            collectGamesByGenre(genreBST, genre, gamesInGenre, vgFile);
+
+            System.out.println();
+            if (gamesInGenre.isEmpty()) {
+                System.out.print("No games found in the " + genre + " genre.");
+                System.out.println();
+            } else {
+                System.out.println("Games in the " + genre + " genre:");
+                for (VideoGame game : gamesInGenre) {
+                    System.out.print("\n" + game.getTitle() +
+                            "\nPrice: $" + game.getPrice() +
+                            "\nDescription: " + game.getDescription() +
+                            "\nStock: " + game.getStock() +
+                            "\nAge Rating: " + game.getAgeRating());
+                    System.out.println();
+                }
+            }
+            System.out.println();
         }
-        performOption(obj, user, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void viewAllGames( Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST ){
+    public static void collectGamesByGenre(BST<VideoGame> genreBST, String genre, ArrayList<VideoGame> games, File vgFile) throws FileNotFoundException {
+        ArrayList<String> gamesInGenre = new ArrayList<>();
+
+        Scanner input = new Scanner(vgFile);
+        while (input.hasNextLine()) {
+            String name = input.nextLine();
+            input.nextLine();
+            input.nextLine();
+            input.nextLine();
+            input.nextLine();
+            String g = input.next();
+            if (input.hasNextLine()) {
+                input.nextLine();
+            }
+            if( g.equals(genre)){
+                gamesInGenre.add(name);
+            }
+            if (input.hasNextLine()) {
+                input.nextLine();
+            }
+        }
+
+        for (int i = 0; i < gamesInGenre.size() ; i++) {
+            VideoGame game = new VideoGame( gamesInGenre.get(i));
+            VideoGame videoGame = genreBST.search(game, genreComparator);
+            games.add(videoGame);
+        }
+
+    }
+
+    public static void viewAllGames( Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         System.out.println();
         System.out.print(titleBST.inOrderString());
-        performOption(obj, user, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void orderVideoGame(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void orderVideoGame(Scanner obj, User user,HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Customer cus = (Customer) user;
         if(!cus.isGuest()){
             System.out.println();
@@ -216,21 +270,58 @@ public class GameStopInterface {
             System.out.print("\nEnter the name of video game you want to order: ");
             obj.nextLine();
             String gameName = obj.nextLine();
-            System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
-            int shipNum = obj.nextInt();
-            System.out.print("\nEnter the date you ordred it, Follow this format (Month, day): ");
-            obj.nextLine();
-            String date = obj.nextLine();
+
             VideoGame videoGame = new VideoGame(gameName);
             VideoGame game = titleBST.search(videoGame, titleComparator);
-            cus.placeOrder(game, date, shipNum);
-            System.out.println();
-            System.out.println(gameName + " is ordered!");
-            System.out.println();
+
+            if (game == null) {
+                System.out.println();
+                System.out.print(gameName + " doesn't exist!");
+                System.out.println();
+            } else {
+                if( cus.getCashBalance() < game.getPrice()){
+                    System.out.print("\nYou don't have enough cash\nYou have $" + cus.getCashBalance() + "\nWhile the video game costs: $" + game.getPrice());
+                    System.out.print("\nWant to add cash --> Yes (type 1) or No (type 2): ");
+                    int choice = obj.nextInt();
+
+                    if(choice == 1){
+                        System.out.print("\nEnter the amount of cash to add to buy game: $");
+                        double moreCash = obj.nextDouble();
+                        cus.setCashBalance(moreCash);
+                        System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
+                        int shipNum = obj.nextInt();
+                        System.out.print("\nEnter the date you ordered it, Follow this format --> Month, day: ");
+                        obj.nextLine();
+                        String date = obj.nextLine();
+                        cus.placeOrder(game, date, shipNum);
+                        cus.setCashBalance(cus.getCashBalance() - game.getPrice());
+                        System.out.println();
+                        System.out.println(gameName + " is ordered!");
+                        System.out.println();
+                    }
+                } else {
+                    System.out.print("\nDo you want:\n1. Standard Shipping\n2. Rush Shipping\n3. Overnight Shipping\n\nEnter the number of your choice: ");
+                    int shipNum = obj.nextInt();
+                    System.out.print("\nEnter the date you ordered it, Follow this format --> Month, day: ");
+                    obj.nextLine();
+                    String date = obj.nextLine();
+                    cus.placeOrder(game, date, shipNum);
+                    cus.setCashBalance(cus.getCashBalance() - game.getPrice());
+                    System.out.println();
+                    System.out.println(gameName + " is ordered!");
+                    System.out.println();
+                }
+                System.out.println();
+            }
         } else {
-            System.out.print("\nAs a Guest, you don't have an account to purchase videogames!\n"+
+            System.out.print("\nAs a Guest, you don't have an account to purchase video games!\n"+
                     "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
             int choice = obj.nextInt();
+
+            while (choice != 1 && choice != 2 ){
+                System.out.print("\nInvalid answer\n" + "Enter 1 to create an account or 2 to remain as Guest: ");
+                choice = obj.nextInt();
+            }
 
             if(choice == 1){
                 System.out.print("Enter your first name: ");
@@ -245,23 +336,34 @@ public class GameStopInterface {
             }
             System.out.println();
         }
-        performOption(obj, cus, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void viewPurchasedGames(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void viewPurchasedGames(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Customer cus = (Customer) user;
         if(!cus.isGuest()){
             System.out.print("\nDo you want to see your shipped (type 1) or unshipped (type 2) orders: ");
             int answer = obj.nextInt();
+
+            while (answer != 1 && answer != 2 ){
+                System.out.print("\nInvalid answer\n" + "Enter 1 for shipped or 2 for unshipped: ");
+                answer = obj.nextInt();
+            }
+
             if(answer == 1){
-            System.out.print("\nHere is Shipped orders:\n" + cus.viewShippedOrders());
+            System.out.print(cus.viewShippedOrders());
             } else {
-                System.out.print("\nHere is Unshipped orders:\n" + cus.viewUnshippedOrders());
+                System.out.print(cus.viewUnshippedOrders());
             }
         } else {
-            System.out.print("\nAs a Guest, you don't have an account to see your purchased videogames!\n"+
+            System.out.print("\nAs a Guest, you don't have an account to see your purchased video games!\n"+
                     "Do you want to create an account\n1. Yes\n2. No\n\nEnter a number: ");
             int choice = obj.nextInt();
+
+            while (choice != 1 && choice != 2 ){
+                System.out.print("\nInvalid answer\n" + "Enter 1 to create an account or 2 to remain as Guest: ");
+                choice = obj.nextInt();
+            }
 
             if(choice == 1){
                 System.out.print("Enter your first name: ");
@@ -276,20 +378,24 @@ public class GameStopInterface {
             }
             System.out.println();
         }
-        performOption(obj, cus, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
     /* Employee and Manager Options: */
-
-    public static void searchCusOrder(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void searchCusOrder(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Employee emp = (Employee) user;
         System.out.print("\nDo you want to search by Order ID (type 1) or by customer's name (type 2): ");
         int answer = obj.nextInt();
 
+        while (answer != 1 && answer != 2 ){
+            System.out.print("\nInvalid answer\n" + "Enter 1 for Order ID or 2 for customer's name: ");
+            answer = obj.nextInt();
+        }
+
         if( answer == 1){
             System.out.print("\nType the Order ID: ");
             int orderId = obj.nextInt();
-            System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderById(orderId));
+            System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderById(orderId) + "\n\n");
         } else {
             System.out.print("\nEnter the customer's full name: ");
             String firstName = obj.next();
@@ -297,35 +403,38 @@ public class GameStopInterface {
             obj.nextLine();
             System.out.print("\nHere is the Customer's order:\n" + emp.searchOrderByCustomerName(firstName, lastName));
         }
-        performOption(obj, emp, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void highestPriorityOrder (Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void highestPriorityOrder (Scanner obj, User user,HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Employee emp = (Employee) user;
         System.out.print("\n\nCurrently the Order with the highest priority is:\n");
         emp.viewHighestPriorityOrder();
-        performOption(obj, user, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void viewAllOrders(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) {
+    public static void viewAllOrders(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Employee emp = (Employee) user;
         emp.viewAllOrders();
-        performOption(obj, emp, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void shipOrder(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
+    public static void shipOrder(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         Employee emp = (Employee) user;
         System.out.print("\nType the Order ID: ");
         int orderId = obj.nextInt();
         emp.shipOrder(orderId);
-        System.out.print("\nThe order has been shipped!\n");
-        performOption(obj, emp, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
-    public static void updateVideoGameDB(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST){
-        Employee emp = (Employee) user;
+    public static void updateVideoGameDB(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         System.out.print("\nWould you like to:\n1. Add a new game\n2. Remove a existing game\n3. Update a existing game's info\n\nEnter your choice: ");
         int answer = obj.nextInt();
+
+        while (answer != 1 && answer != 2 && answer != 3){
+            System.out.print("\nInvalid answer\n" + "Enter 1 to add new game or 2 to remove a game or 3 to update a game's info: ");
+            answer = obj.nextInt();
+        }
 
         if( answer == 1){
             System.out.print("\n\nAdding a new game:\n");
@@ -344,50 +453,65 @@ public class GameStopInterface {
             System.out.print("\nEnter the genre of the game: ");
             String genre = obj.next();
             VideoGame newGame = new VideoGame(gameName, price, gameDec, stock, ageString, genre);
-            emp.addNewGame(newGame);
+            titleBST.insert(newGame, titleComparator);
+            genreBST.insert(newGame, genreComparator);
             System.out.print("\n\nNew Game added!\n");
         } else if (answer == 2){
             System.out.print("\nName of video game to Remove: ");
             obj.nextLine();
             String gameName = obj.nextLine();
-            System.out.print("\n" + gameName + " is removed.\n");
+            VideoGame gameToRemove = titleBST.search(new VideoGame(gameName), titleComparator);
+
+            if (gameToRemove != null) {
+                titleBST.remove(gameToRemove, titleComparator);
+                genreBST.remove(gameToRemove, genreComparator);
+                System.out.print("\n" + gameName + " is removed.\n");
+            } else {
+                System.out.print("\n" + gameName + " not found in database.\n");
+            }
+
         } else{
             System.out.print("\nEnter the name of game you would like to update: ");
             obj.nextLine();
             String gameName = obj.nextLine();
+            VideoGame gameToChange = titleBST.search(new VideoGame(gameName), titleComparator);
             System.out.print("\nWould you like to:\n1. Change the game name\n2. Change the price\n3. Change the description\n4. Change the stock\n5. Change the age rating\n6. Change the genre\n\nEnter a number choice: ");
             int choice = obj.nextInt();
+            titleBST.remove(gameToChange, titleComparator);
+            genreBST.remove(gameToChange, genreComparator);
 
             if(choice == 1){
                 System.out.print("\nEnter the new Game Name: ");
                 obj.nextLine();
                 String gName = obj.nextLine();
-                emp.updateGameByKey(gName, 0.00, null, 0, null, null);
+                gameToChange.setTitle(gName);
             } else if ( choice == 2){
                 System.out.print("\nEnter the new Price: ");
                 double cost = obj.nextDouble();
-                emp.updateGameByKey(null, cost, null, 0, null, null);
+                gameToChange.setPrice(cost);
             } else if ( choice == 3){
                 System.out.print("\nEnter the new Game Description: ");
                 obj.nextLine();
                 String gDec = obj.nextLine();
-                emp.updateGameByKey(null, 0.00, gDec, 0, null, null);
+                gameToChange.setDescription(gDec);
             } else if ( choice == 4){
                 System.out.print("\nEnter the new Stock: ");
                 int gameStock = obj.nextInt();
-                emp.updateGameByKey(null, 0.00, null, gameStock, null, null);
-            } else if ( answer == 5){
+                gameToChange.setStock(gameStock);
+            } else if ( choice == 5){
                 System.out.print("\nEnter the new Age Rating: ");
                 String rating = obj.next();
-                emp.updateGameByKey(null, 0.00, null, 0, rating, null);
+                gameToChange.setAgeRating(rating);
             } else {
                 System.out.print("\nEnter the new Genre: ");
                 String gameGenre = obj.next();
-                emp.updateGameByKey(null, 0.00, null, 0, null, gameGenre);
+                gameToChange.setGenre(gameGenre);
             }
+            titleBST.insert(gameToChange, titleComparator);
+            genreBST.insert(gameToChange, genreComparator);
             System.out.print("\n\nChange successful!\n");
         }
-        performOption(obj, user, titleBST, genreBST);
+        performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
     }
 
     /**
@@ -434,18 +558,18 @@ public class GameStopInterface {
      * @param obj   The Scanner object to read user input.
      * @param user   The User object representing the current user.
      */
-    public static void invalidChoice(Scanner obj, User user, BST<VideoGame> titleBST, BST<VideoGame> genreBST) {
+    public static void invalidChoice(Scanner obj, User user, HashTable<Customer> cuHashTable,  HashTable<Employee> empHashTable, BST<VideoGame> titleBST, BST<VideoGame> genreBST, File vgFile) throws IOException {
         if( user instanceof Customer){
             System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
-            performOption(obj, user, titleBST, genreBST);
+            performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
         } else if( user instanceof Employee){
             Employee emp = (Employee) user;
             if(emp.isManager()){
                 System.out.println("\nInvalid menu option. Please enter A-E or X to exit.\n");
-                performOption(obj, user, titleBST, genreBST);
+                performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
             } else {
                 System.out.println("\nInvalid menu option. Please enter A-D or X to exit.\n");
-                performOption(obj, user, titleBST, genreBST);
+                performOption(obj, user, cuHashTable, empHashTable, titleBST, genreBST, vgFile);
             }
         }
     }
@@ -454,12 +578,66 @@ public class GameStopInterface {
      * Handles the exit option, closing the scanner, writing to the file of the changes that occured in the databases and displaying a goodbye message.
      * @param obj The Scanner object to read user input.
      */
-    public static void exitOptionX(Scanner obj){
+    public static void exitOptionX(Scanner obj, User user, HashTable<Employee> empHashTable, BST<VideoGame> videoGameDatabase_Title, HashTable<Customer> cuHashTable) throws IOException {
         System.out.print("\nGoodbye!");
-
-        // code that will write to files of the changes that occured throughout the program
+        writeDataToFile("src/UpdatedEmp.txt", empHashTable.toString());
+        writeDataToFile("src/VideoGameUpdated.txt", videoGameDatabase_Title.preOrderString());
+        writeDataToFile("src/scuffedCustomers.txt", cuHashTable.toString());
+        removeTrailingBlankLines("src/UpdatedEmp.txt");
+        removeTrailingBlankLines("src/VideoGameUpdated.txt");
+        removeTrailingBlankLines("src/scuffedCustomers.txt");
         obj.close();
     }
+
+
+    /**
+     * It writes a new file with given data
+     * @parm a file name to write to,
+     * @parm what data should be written in the file
+     */
+    public static void writeDataToFile(String filePath, String data) throws IOException {
+        try (FileWriter file = new FileWriter(filePath);
+             BufferedWriter buffer = new BufferedWriter(file);
+             PrintWriter writer = new PrintWriter(buffer);) {
+            writer.println(data);
+        } catch (IOException error) {
+            System.err.println("There was a problem writing to the file: " + filePath);
+        }
+    }
+
+    public static void removeTrailingBlankLines(String filePath) throws IOException {
+            List<String> lines = new ArrayList<>();
+            boolean trailingEmpty = true;
+            int lastNonEmpty = -1;
+
+            // Read file and find last non-empty line
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                int index = 0;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                    if (!line.trim().isEmpty()) {
+                        lastNonEmpty = index;
+                    }
+                    index++;
+                }
+            }
+
+            // If file ends with non-empty line, no need to modify
+            if (lastNonEmpty == lines.size() - 1) return;
+
+            // Write back only up to last non-empty line
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (int i = 0; i <= lastNonEmpty + 1; i++) {
+                    if (i > 0) writer.newLine();
+                    if (i <= lastNonEmpty) {
+                        writer.write(lines.get(i));
+                    }
+                }
+            }
+        }
+
+
 
     /**
      * Checks if a user account exists in the database of customer or employee based on the provided email and password.
@@ -542,17 +720,21 @@ public class GameStopInterface {
                     VideoGame videoGame = new VideoGame(gameName);
                     VideoGame game = titleBST.search(videoGame, titleComparator);
                     cuUnshipped.add(new Order(orderID,game,priorityNum));
-                  //  allUnShipped.add(new Order(orderID, game, priorityNum));
 
                     if(input.hasNextLine()){
                         input.nextLine();
                     }
                 }
+                boolean isGuest = input.nextBoolean();
+                if(input.hasNextLine()){
+                    input.nextLine();
+                }
+
 
                 int spaceLoc = name.indexOf(' ');
                 String firstName = name.substring(0, spaceLoc);
                 String lastName = name.substring(spaceLoc + 1);
-                Customer cus = new Customer(firstName, lastName, email, password, cashBalance, numOfShipped, shippVideoGames, numOfUnshipped, cuUnshipped );
+                Customer cus = new Customer(firstName, lastName, email, password, cashBalance, numOfShipped, shippVideoGames, numOfUnshipped, cuUnshipped, isGuest);
                 cuHashTable.add(cus);
 
                 for (int i = 0; i < cuUnshipped.size(); i++) {
@@ -562,8 +744,6 @@ public class GameStopInterface {
                 for (int i = 0; i < shippVideoGames.size(); i++) {
                     shippVideoGames.get(i).setCustomer(cus);
                 }
-
-
 
                 if(input.hasNextLine()){
                     input.nextLine();
@@ -583,7 +763,6 @@ public class GameStopInterface {
                 String name = input.nextLine();
                 String email = input.next();
                 String password = input.next();
-                int empID = input.nextInt();
                 boolean isManager = input.nextBoolean();
 
                 int spaceLoc = name.indexOf(' ');
@@ -592,7 +771,9 @@ public class GameStopInterface {
                 empHashTable.add(new Employee(firstName, lastName, email, password, isManager, customers, titleBST, genreBST, allUnShipped));
                 if(input.hasNextLine()){
                     input.nextLine();
-                    input.nextLine();
+                    if(input.hasNextLine()) {
+                        input.nextLine();
+                    }
                 }
             }
             input.close();
@@ -616,20 +797,16 @@ public class GameStopInterface {
                 String gameDes = input.nextLine();
                 int stock = input.nextInt();
                 String ageRating = input.next();
-                int ageLimit = 0;
-                if(ageRating.contains("+")){
-                    int plusIndex = ageRating.indexOf("+");
-                    ageLimit = Integer.parseInt(ageRating.substring(0, plusIndex));
-                } else {
-                    ageLimit = Integer.parseInt(ageRating);
-                }
+
 
                 String genre = input.next();
-                titleBST.insert(new VideoGame(title, price, gameDes, stock, Integer.toString(ageLimit), genre), titleComparator);
-                genreBST.insert(new VideoGame(title, price, gameDes, stock, Integer.toString(ageLimit), genre), genreComparator);
+                titleBST.insert(new VideoGame(title, price, gameDes, stock, ageRating, genre), titleComparator);
+                genreBST.insert(new VideoGame(title, price, gameDes, stock, ageRating, genre), genreComparator);
                 if(input.hasNextLine()){
                     input.nextLine();
-                    input.nextLine();
+                    if(input.hasNextLine()) {
+                        input.nextLine();
+                    }
                 }
             }
             input.close();

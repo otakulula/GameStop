@@ -1,12 +1,8 @@
 /**
-  * Employee.java
-  * @author Huey Nguyen
-  * CIS 22C, Final Project
-  */
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
+ * Employee.java
+ * @author Huey Nguyen
+ * CIS 22C, Final Project
+ */
 import DataStructures.BST;
 import DataStructures.Heap;
 import DataStructures.HashTable;
@@ -17,15 +13,13 @@ import DataStructures.LinkedList;
 public class Employee extends User{
 
     private boolean isManager;
-    private BST<VideoGame> gameTitles;
-    private BST<VideoGame> gameGenres;
     private HashTable<Customer> customers;
     private Heap<Order> unshippedOrders;
-    
+
 
     /**
      * Constructs an Employee object with the given details.
-     * 
+     *
      * @param firstName The first name of the employee.
      * @param lastName The last name of the employee.
      * @param email The email address of the employee.
@@ -33,29 +27,24 @@ public class Employee extends User{
      * @param isManager Indicates if the employee is a manager.
      */
     public Employee(String firstName, String lastName, String email,
-     String password, boolean isManager, HashTable<Customer> customers, 
-     BST<VideoGame> videoGameTitles, BST<VideoGame> videoGameGenres,
-      ArrayList<Order> allUnshippedGames) {
+                    String password, boolean isManager, HashTable<Customer> customers,
+                    BST<VideoGame> videoGameTitles, BST<VideoGame> videoGameGenres,
+                    ArrayList<Order> allUnshippedGames) {
         super(firstName, lastName, email, password);
         this.isManager = isManager;
-        this.gameTitles = new BST<>(videoGameTitles, new TitleComparator());
-        this.gameGenres = new BST<>(videoGameGenres, new GenreComparator());
         this.customers = customers;
         this.unshippedOrders = new Heap<>(allUnshippedGames, new OrderPriorityComparator());
-        
     }
-     /**
-      * Employee constructor only email and password
-      * @param email employee email
-      * @param password employee password
-      */
+    /**
+     * Employee constructor only email and password
+     * @param email employee email
+     * @param password employee password
+     */
 
     public Employee(String email, String password){
         super("", "", email, password);
-        this.isManager = false;        
-        this.gameTitles = new BST<VideoGame>();
-        this.gameGenres = new BST<VideoGame>();
-        this.customers = new HashTable<>(10); 
+        this.isManager = false;
+        this.customers = new HashTable<>(10);
     }
 
     /**
@@ -64,43 +53,22 @@ public class Employee extends User{
     private static class OrderPriorityComparator implements Comparator<Order> {
         @Override
         public int compare(Order order1, Order order2) {
-            return Integer.compare(order2.getPriority(), order1.getPriority()); 
+            return Integer.compare(order2.getPriority(), order1.getPriority());
         }
     }
-
-/**
- * comparator for video game titles
- */
-    public class TitleComparator implements Comparator<VideoGame> {
-        @Override
-        public int compare(VideoGame game1, VideoGame game2) {
-            return game1.getTitle().compareTo(game2.getTitle());
-        }
-    }
-
-/**
- * Comparator for video game genres.
- */
-    public class GenreComparator implements Comparator<VideoGame> {
-        @Override
-        public int compare(VideoGame game1, VideoGame game2) {
-            return game1.getGenre().compareToIgnoreCase(game2.getGenre());
-        }
-    }
-
 
     /**
      * Retrieves whether the employee is a manager.
-     * 
+     *
      * @return true if the employee is a manager, false otherwise.
      */
     public boolean isManager() {
         return isManager;
     }
-    
+
     /**
      * Sets whether the employee is a manager.
-     * 
+     *
      * @param isManager true if the employee should be a manager, false otherwise.
      */
     public void setManager(boolean isManager) {
@@ -121,36 +89,41 @@ public class Employee extends User{
         }
         return null;
     }
+
+
+
+
+
     /**
      * Search for an order by customer's first and last name.
      * @param firstName is the first name of the customer
      * @param lastName is the last name of the custormer
      * @return order we are looking for
      */
-
     public String searchOrderByCustomerName(String firstName, String lastName) {
         ArrayList<Order> ordersList = unshippedOrders.sort();
         LinkedList<Order> finish = new LinkedList<Order>();
-            for (int i = 0; i < ordersList.size(); i++) {
-                Order order = ordersList.get(i);
+        for (int i = 0; i < ordersList.size(); i++) {
+            Order order = ordersList.get(i);
 
-                if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
+            if (order.getCustomer().getFirstName().equalsIgnoreCase(firstName) &&
                     order.getCustomer().getLastName().equalsIgnoreCase(lastName)) {
-                    finish.addLast(order);
-                }
+                finish.addLast(order);
             }
-            if(!finish.isEmpty()){
-                return finish.toString();
-            }
-            return null;
+        }
+        if(!finish.isEmpty()){
+            return finish.toString();
+        }
+        return firstName + " " + lastName + " doesn't have any orders!\n\n";
     }
     /**
-     * View the next order in the priority 
-     * 
+     * View the next order in the priority
+     *
      */
 
     public void viewHighestPriorityOrder() {
-        System.out.println(unshippedOrders.sort().get(0));
+        ArrayList<Order> sorted = unshippedOrders.sort();
+        System.out.println(sorted.get(0));
     }
 
     /**
@@ -162,6 +135,7 @@ public class Employee extends User{
             System.out.println(sorted.get(i));
         }
     }
+
     /**
      * ships an order out  (Need get shipped/unshipped list from customer class)
      * (Remove from Heap. Insert Order to shipped Linked List for the Customer + Remove from Unshipped List)
@@ -169,7 +143,7 @@ public class Employee extends User{
      */
     public void shipOrder(int orderID) {
         Order orderToShip = searchOrderById(orderID);
-        
+
         if (orderToShip != null) {
 
             int indexToRemove = -1;
@@ -185,117 +159,31 @@ public class Employee extends User{
                 LinkedList<Order> shipped = orderToShip.getCustomer().getShippedList();
                 shipped.addLast(orderToShip);
 
-                LinkedList<Order> unshipped = orderToShip.getCustomer().getUnshippedList();
-                int orderIndex = unshipped.findIndex(orderToShip);
-                unshipped.advanceIteratorToIndex(orderIndex);
-                unshipped.removeIterator();
+                orderToShip.getCustomer().getUnshippedList().positionIterator();
+                int orderIndex =  orderToShip.getCustomer().getUnshippedList().findIndex(orderToShip);
+                orderToShip.getCustomer().getUnshippedList().advanceIteratorToIndex(orderIndex);
+
+                orderToShip.getCustomer().getUnshippedList().removeIterator();
 
 
                 System.out.println("Order " + orderID + " has been shipped.");
             }
             else {
-            System.out.println("Order not found in unshipped orders.");
+                System.out.println("Order not found in unshipped orders.");
             }
-        } 
+        }
         else {
             System.out.println("Order not found.");
         }
     }
-    /**
-     * writes all the shipped orders to a file
-     * @param filename name of the file to write to
-     */
-    public void writeToFile(String filename) {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            
-            pw.println(getFirstName() + " " + getLastName());
-            pw.println(getEmail());
-            pw.println(getPassword());
-            pw.println(isManager());
 
-
-        } catch (IOException e) {
-            System.out.println("Error writing to " + filename);
-        }
-    }
-
-    /**
-     * update game details
-     * @param gameTitle title of the game
-     * @param newPrice new price to be set
-     * @param newDescription new description
-     * @param additionalStock the stock to add
-     * @precondition gameTitle needs to be given
-     */
-
-    public void updateGameByKey(String gameTitle, double newPrice, String newDescription,
-     int additionalStock, String rating, String genre) {
-        if(this.isManager()){
-            VideoGame searchGame = new VideoGame(gameTitle);
-            VideoGame game = gameTitles.search(searchGame, new TitleComparator());
-
-            if (game != null) {
-                if(gameTitle != null){
-                    game.setTitle(gameTitle);
-                    gameTitles.remove(game, new TitleComparator());
-                    gameGenres.remove(game, new GenreComparator());
-                    gameTitles.insert(game, new TitleComparator());
-                    gameGenres.insert(game, new GenreComparator());
-                }
-                else if(newPrice != 0.00){
-                    game.setPrice(newPrice);
-                }
-                else if(newDescription != null){
-                    game.setDescription(newDescription);
-                }  
-                else if(additionalStock != 0){
-                    game.setStock(game.getStock() + additionalStock);
-                }
-                else if(rating != null){
-                    game.setAgeRating(rating);
-                }
-                else if(genre != null){
-                    game.setGenre(genre);
-                    gameTitles.remove(game, new TitleComparator());
-                    gameGenres.remove(game, new GenreComparator());
-                    gameTitles.insert(game, new TitleComparator());
-                    gameGenres.insert(game, new GenreComparator());
-                }
-            } 
-            else {
-            System.out.println("Game not found.");
-            }
-        }
-        
-    }
-
-/**
- * adds new game
- * @param newGame new game to be added
- */
-    public void addNewGame(VideoGame newGame) {
-        if(this.isManager()){
-            gameTitles.insert(newGame, new TitleComparator());
-            gameGenres.insert(newGame, new GenreComparator());
-        }
-    }
-/**
- * removes a game
- * @param gameTitle
- */
-    public void removeGame(String gameTitle) {
-        if(this.isManager()){
-            gameTitles.remove(new VideoGame(gameTitle), new TitleComparator());
-            gameGenres.remove(new VideoGame(gameTitle), new GenreComparator());
-        }
-    }
     /**
      * Returns a consistent hash code for each Employee email + password
      * by summing the Unicode values of each character in the key
      * Key = title
      * @return the hash code
      */
- @Override
+    @Override
     public int hashCode() {
         int sum = 0;
         String key = getEmail();
@@ -320,7 +208,7 @@ public class Employee extends User{
             return false;
         } else {
             Employee employee = (Employee)o;
-             return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
+            return this.getEmail().equals(employee.getEmail()) && this.getPassword().equals(employee.getPassword());
         }
     }
     /**

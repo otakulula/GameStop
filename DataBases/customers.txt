@@ -16,6 +16,7 @@ Desert Stalker
 10516
 Ticket to Ride
 10824
+false
 
 Maria Rodriguez
 blueLighting@outlook.com
@@ -35,6 +36,7 @@ Enshrouded
 20303
 For the Kind
 30911
+false
 
 David Chen
 britishPlane@gmail.com
@@ -50,6 +52,7 @@ Silent Hill
 1
 The Last of Us
 10321
+false
 
 Sarah Johnson
 amazinglyTerrible@icloud.com
@@ -57,6 +60,7 @@ sunset46planet
 215.67
 0
 0
+false
 
 Robert Williams
 jeepBoost@mail.com
@@ -72,6 +76,7 @@ Silent Hill
 31212
 Counter-Strike 2
 10918
+false
 
 Willam Dawson
 moonShine@hotmail.com
@@ -81,3 +86,4 @@ red62purple
 Elden Ring
 11010
 0
+false

@@ -4,11 +4,7 @@
  * CIS 22C
  */
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-public class VideoGame{
+ public class VideoGame{
     private String title;
     private double price;
     private String description;
@@ -174,10 +170,11 @@ public class VideoGame{
      * @return the string representation of the video game
      */
     @Override
-    public String toString(){
-        return title + "\nPrice: $" + price + "\nDescription: " + description + "\nStock: " 
-        + stock + "\nAge Rating: " + ageRating + "\nGenre: " + genre + "\n";
+      public String toString(){
+        return title + "\n" + price + "\n" + description + "\n"
+               + stock + "\n" + ageRating + "\n" + genre + "\n\n";
     }
+
 
     /**
      * Returns a consistent hash code for each VideoGame 
@@ -209,29 +206,6 @@ public class VideoGame{
         } else {
             VideoGame game = (VideoGame)o;
             return title.equals(game.title);
-        }
-    }
-
-    /**
-     * Converts the VideoGame object to a string for writing to a file
-     */
-    public String toFileString(){
-        return title + "\n" + price + "\n" + description + "\n" + stock + "\n" + ageRating + "\n" + genre + "\n";
-    }
-
-    /**
-     * Writes the VideoGame object to a file
-     * @param filename the name of the file
-     */
-    public void writeToFile(String fileName){
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(fileName, true));
-            writer.println(this.toFileString().trim());
-            writer.println(); 
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error writing game to file: " + fileName);
-            e.printStackTrace();
         }
     }
 }

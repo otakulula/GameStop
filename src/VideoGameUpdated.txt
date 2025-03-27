@@ -1,0 +1,104 @@
+Resident Evil 4
+39.99
+A survival horror game where Leon battles cultists to rescue the President's daughter.
+3
+13+
+Horror
+
+Elden Ring
+59.99
+An expansive open-world action RPG where players explore a mysterious realm filled with challenging foes.
+0
+18+
+Action
+
+Counter-Strike 2
+0.0
+A tactical shooter that refines the classic bomb defusal experience.
+3
+13+
+Action
+
+Desert Stalker
+17.99
+A stealth-action game where you navigate perilous desert landscapes and overcome dangerous foes.
+4
+18+
+Strategy
+
+Eternal Return
+0.0
+A unique battle royale survival game that blends MOBA and crafting elements on a mysterious island.
+5
+13+
+Anime
+
+Enshrouded
+29.99
+A RPG where you explore a mysterious world, craft gear, and confront ancient evils.
+3
+13+
+Adventure
+
+For the Kind
+24.99
+A turn-based roguelike strategy RPG in a challenging, unpredictable fantasy world.
+11
+13+
+Strategy
+
+FC 24
+69.99
+A modern football simulation game that delivers dynamic gameplay and immersive career modes.
+4
+13+
+Simulation
+
+God of War Ragnarok
+59.99
+An epic action game that follows Kratos and Atreus on a perilous journey through Norse mythology.
+8
+13+
+Action
+
+The Last of Us
+59.99
+A post-apocalyptic action-adventure game where Joel and Ellie fight to survive in a harsh, infected world.
+5
+13+
+Adventure
+
+Rust
+39.99
+A multiplayer survival game where players scavenge for resources and build bases.
+2
+13+
+Survival
+
+Silent Hill
+69.99
+A survival horror game series in a fog-shrouded town with supernatural mysteries.
+6
+13+
+Horror
+
+Wartales
+24.99
+A tactical RPG where you lead a band of mercenaries through a gritty medieval world.
+-1
+13+
+Strategy
+
+War Thunder
+0.0
+A realistic military MMO offering immersive battles across air, land, and sea.
+7
+13+
+Simulation
+
+Ticket to Ride
+14.99
+A digital board game where players collect cards to build train routes and connect cities across a map.
+7
+13+
+Board

@@ -53,7 +53,7 @@ public class Heap<T> {
         int maxIndex = index;
 
         if(heapSize >= left && cmp.compare(heap.get(left), heap.get(index)) > 0 ){
-           maxIndex = left;
+            maxIndex = left;
         }
 
         if(heapSize >= right && cmp.compare(heap.get(right), heap.get(maxIndex)) > 0){
@@ -244,6 +244,7 @@ public class Heap<T> {
             heap.set(i, copyHeap.get(i));
         }
 
+        this.heapSize = size;
         return result;
     }
 }

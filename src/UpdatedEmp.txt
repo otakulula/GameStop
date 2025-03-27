@@ -1,0 +1,19 @@
+Rory Calloway
+rcalloway@gamestop.com
+OceanBreeze73!
+false
+
+Zane Holloway
+zholloway@gamestop.com
+RiverStone82!
+true
+
+Kendall Mercer
+kmercer@gamestop.com
+SunsetTrail96#
+false
+
+Tessa Vaughn
+tvaughn@gamestop.com
+WinterFrost28$
+false
